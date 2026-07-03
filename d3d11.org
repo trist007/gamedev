@@ -1,0 +1,4 @@
+#+TITLE: TOPIC
+#+STARTUP: overview
+
+* Inbox

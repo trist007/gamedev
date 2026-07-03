@@ -1,0 +1,86 @@
+#+TITLE: TOPIC
+#+STARTUP: overview
+
+* Inbox
+
+** If you need to have binary use a shared lib (.so) in the same directory instead of ldconfig -vv then use
+#+begin_src
+$(GAME_LIB): $(GAME_OBJS) | $(BINDIR) $(BUILDDIR)
+	$(CC) $(CCFLAGS) -shared -fPIC $(GAME_OBJS) -L$(BINDIR) -lsitcha \
+ 		$(LDPATHS) $(LDFLAGS) -Wl,-rpath,'$$ORIGIN' -o $@
+	@echo "[GAME] $@ built."
+
+$(TARGET): $(MAIN_OBJS) $(ENGINE_LIB) | $(BINDIR) $(BUILDDIR)
+	$(CC) $(CCFLAGS) $(MAIN_OBJS) -L$(BINDIR) -lsitcha \
+		$(LDPATHS) $(LDFLAGS) -Wl,-rpath,'$$ORIGIN' -o $@
+	@echo "[MAIN] $@ built."
+
+
+#+end_src
+[2026-07-02 Thu 11:48]
+[[file:~/dev/wing/wing/code/Makefile::$(GAME_LIB): $(GAME_OBJS) | $(BINDIR) $(BUILDDIR)]]
+
+** if you need a binary to use a .so file in the same directory use
+#+begin_src
+
+
+#+end_src
+[2026-07-02 Thu 11:52]
+[[file:~/dev/wing/wing/code/Makefile::$(GAME_LIB): $(GAME_OBJS) | $(BINDIR) $(BUILDDIR)]]
+
+** if you need a binary to use a .so in the same dir instead of /usr/lib
+#+begin_src  $(GAME_LIB): $(GAME_OBJS) | $(BINDIR) $(BUILDDIR)
+	$(CC) $(CCFLAGS) -shared -fPIC $(GAME_OBJS) -L$(BINDIR) -lsitcha \
+ 		$(LDPATHS) $(LDFLAGS) -Wl,-rpath,'$$ORIGIN' -o $@
+	@echo "[GAME] $@ built."
+
+$(TARGET): $(MAIN_OBJS) $(ENGINE_LIB) | $(BINDIR) $(BUILDDIR)
+	$(CC) $(CCFLAGS) $(MAIN_OBJS) -L$(BINDIR) -lsitcha \
+		$(LDPATHS) $(LDFLAGS) -Wl,-rpath,'$$ORIGIN' -o $@
+	@echo "[MAIN] $@ built."
+
+
+#+end_src
+-Wl is comma separated options
+-rpath bakes ORIGIN which is same dir into target
+[2026-07-02 Thu 11:52]
+[[file:~/dev/wing/wing/code/Makefile::$(CC) $(CCFLAGS) -shared -fPIC $(GAME_OBJS) -L$(BINDIR) -lsitcha \\]]
+
+** On linux be sure to have mesa-vulkan-intel and VulkanValidation-Layers packages otherwise the only ICDs will be virt for VMs
+Also don't need -lvolk if I'm compiling volk.c for the volk.o and I can use the distro's libvulkan.so instead of the one
+in VulkanSDK
+[2026-07-02 Thu 22:28]
+[[file:~/dev/wing/wing/code/vk_engine.c::if (deviceCount > MAX_PHYSICAL_DEVICES)]]
+
+** Debugging notes
+Check what a library's linker search actually resolves to:
+
+ld -o /dev/null -lvolk --verbose 2>&1 | grep -i "attempt\|found"
+
+Shows every path the linker tried for -lvolk, revealing whether a stray system/SDK copy would shadow your own compiled object.
+
+Find files by name pattern under a directory:
+
+find /path/to/sdk/lib -iname '*volk*'
+
+Caught the SDK's bundled libvolk.a sitting in the Vulkan SDK's lib/ — the actual duplicate-symbol source, missed by the plain ld test since that didn't include the SDK's -L path.
+
+Check what shared libraries a binary actually links against:
+
+ldd ../bin/wing | grep -i vulkan
+
+Confirmed whether wing was using the distro loader (/usr/lib/libvulkan.so.1) or one from the SDK.
+
+List exported symbols in a shared object:
+
+nm -D libgame.so | grep -i game
+
+-D shows the dynamic symbol table (what's visible to dlsym/other binaries at runtime) rather than the full symbol table. Confirmed initGame, updateGame, renderGame, runGame, and the game_api struct were all properly exported.
+
+Vulkan loader verbose diagnostics:
+
+VK_LOADER_DEBUG=all ./wing 2>&1 | grep -iE "icd|layer|error"
+
+The loader has its own internal logging separate from your app's LOG() calls — this traces every ICD manifest and layer manifest it searches for, where, and why each one succeeded/failed/got skipped (e.g. arch mismatch). This is what pinpointed both the missing 64-bit Intel ICD and the missing validation layer manifest, before either was visible any other way.
+[2026-07-02 Thu 22:31]
+[[file:~/dev/wing/wing/code/vk_engine.c::}]]

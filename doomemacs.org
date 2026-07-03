@@ -1,0 +1,21 @@
+* Inbox
+** For multicursor have the cursor on the match and do "gzm"
+[2026-06-30 Tue 22:54]
+[[file:~/dev/wing/wing/code/game.c]]
+** For lsp stuff like go to definition make sure to have Bear installed so you can run
+make clean
+bear -- make game
+make clean
+bear --append -- make
+
+so it can populate the compile_commands.json, now your go to definition function will work
+[2026-07-02 Thu 22:53]
+[[file:~/dev/wing/wing/code/vk_engine.c::VK_CHECK(vkCreateInstance(&instanceCreateInfo, NULL, &engine->instance));]]
+** SPC h b b - search for all doom emacs keybinds
+[2026-07-02 Thu 23:12]
+[[file:~/.config/doom/config.el::;;]]
+** SPC h r r - reloads configs esp for init.#+begin_src emacs-lisp :tangle yes
+SPC f p - edit configs
+#+end_src
+[2026-07-02 Thu 23:15]
+[[file:~/.config/doom/config.el:::desc "elfeed" "o y" #'elfeed)]]

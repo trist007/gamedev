@@ -1,0 +1,11 @@
+#+TITLE: TOPIC
+#+STARTUP: overview
+
+* Inbox
+
+** - bought 3d model on cgtrader had to flip UVs vertically cause fbx
+  was made for directX / unreal so in UV editor in Blender I did
+  object mode select all, then edit mode, switch to UV editor hit A to select all UV islands
+  S Y -1 enter - to flip all UVs vertically
+[2026-07-02 Thu 23:34]
+[[file:~/dev/wing/wing/code/TODO::- bought 3d model on cgtrader had to flip UVs vertically cause fbx]]
