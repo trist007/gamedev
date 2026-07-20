@@ -1,0 +1,5 @@
+* Inbox
+** when using cimgui with Vulkan as well as volk you need to let ImGui know that you are using volk
+in the build.bat within the CommonCompilerFlags set
+ -DIMGUI_IMPL_VULKAN_USE_VOLK -DIMGUI_IMPL_VULKAN_VOLK_FILENAME="<volk/volk.h>" ^
+[2026-07-19 Sun 19:20]
