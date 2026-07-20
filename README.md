@@ -10,7 +10,7 @@
 ;; manually opening it first
 (after! org
   (setq org-capture-templates
-        `(("g" "Gamedev note...")  ; parent menu, no template of its own
+        (("g" "Gamedev note...")  ; parent menu, no template of its own
 
           ("ge" "DoomEmacs note" entry
            (file+headline ,(concat gamedev-dir "doomemacs.org") "Inbox")
