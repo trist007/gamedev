@@ -1,0 +1,49 @@
+* Inbox
+** instead of using stdbool.h for true and false best to just use int and return 0 or 1
+because stdbool.h may not be available or true and false may have conflicts so for max
+portability using ints and return 0 or 1 this keeps it working like C89
+[2026-07-19 Sun 19:51]
+** when EXPORT in header file is declared which is just a MACRO that expands
+to __declspec(dllexport) the function gets exported to the dll in the link phase
+ /out:..\bin\sitcha_vk.dll ^
+
+You can verify with dumpbin say you are looking to see if editorBuildBVH was exported to the DLL
+#+BEGIN_SRC C:\dev\wing\wing\bin>dumpbin /EXPORTS sitcha_vk.dll | findstr editorBuild
+        515  202 000119C0 editorBuildBVH = editorBuildBVH
+#+END_SRC
+[2026-07-19 Sun 23:02]
+**When using VSCode if your header files do not line in with #include "base.h"
+where base.h is not in code but is in code/common then to satisfy VSCode intellisense
+update the c_cpp_properties.json
+#+BEGIN_SRC json
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/wing/code/common",
+                "${VULKAN_SDK}\\Include",
+                "C:\\VulkanSDK\\1.4.341.1\\Include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.22621.0",
+            "compilerPath": "cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64"
+        }
+    ],
+    "version": 4
+}
+#+END_SRC
+
+then do ctrl+shift+p and restart intellisense or restart intellisense server / active file
+[2026-07-20 Mon 20:45]
+**for Intellisense to work properly in VsCode be sure to use bear to create
+the compile_commands.json file
+[2026-07-20 Mon 21:47]

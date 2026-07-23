@@ -2,3 +2,6 @@
 #+STARTUP: overview
 
 * Inbox
+**HLSL is column major that is what d3d11 uses
+Slang is row major by default that is what Vulkan uses
+[2026-07-21 Tue 22:45]

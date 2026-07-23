@@ -1,0 +1,39 @@
+* Inbox
+**For VsCode tasks.json
+#+BEGIN_SRC json 
+        {
+            "label": "piso build",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "piso.csproj",
+                "-o",
+                "../../bin",
+                "-c",
+                "Debug",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/wing/tools/piso"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "piso run",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "../tools/piso/piso.csproj",
+                "--configuration",
+                "Debug",
+                "--no-restore"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/wing/bin"
+            },
+            "problemMatcher": []
+        }
+#+END_SRC
+[2026-07-19 Sun 20:26]

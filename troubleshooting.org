@@ -1,0 +1,5 @@
+* Inbox
+**When troubleshooting use SDL_Log before and after functions, or if it is a SIGSEV because it called
+a func with 0x0 then print out the %p pointers for each function before and after functions in case
+the pointers get corrupted
+[2026-07-19 Sun 19:35]

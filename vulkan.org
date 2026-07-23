@@ -2,3 +2,19 @@
 #+STARTUP: overview
 
 * Inbox
+** My airplane was jittering.  This was due to writing to the Uniform
+Buffer Object before the vkWaitForFences call so I was memcpy to
+currentFrame.ShaderData before vkWaitForFences could confirm that the GPU
+was finished with the previous frame.  Just moving my update_shader_data to after
+the begin_frame solved the issue
+[2026-07-21 Tue 15:58]
+**To get device info
+
+#+BEGIN_SRC c
+    VkPhysicalDeviceProperties props = { 0 };
+    vkGetPhysicalDeviceProperties(engine->chosenGPU, &props);
+
+    engine->minUniformBufferOffsetAlignment = props.limits.minUniformBufferOffsetAlignment;
+    #+END_SRC
+
+[2026-07-21 Tue 18:03]

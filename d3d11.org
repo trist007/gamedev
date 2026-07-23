@@ -2,3 +2,12 @@
 #+STARTUP: overview
 
 * Inbox
+**Text from a SDF font atlas was smudgey and hard to read
+the solution was to increase the pixel_dist_scale
+[2026-07-22 Wed 21:33]
+[[file:c:/dev/org/gamedev/d3d11.org::*Inbox][Inbox]]
+**was getting black for my terrain no color the solution was to
+change createSwapChainDesc from DXGI_SWAP_EFFECT_FLIP_DISCARD to
+DXGI_SWAP_EFFECT_DISCARD
+[2026-07-22 Wed 21:35]
+[[file:c:/dev/org/gamedev/d3d11.org]]

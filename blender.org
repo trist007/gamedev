@@ -9,3 +9,41 @@
   S Y -1 enter - to flip all UVs vertically
 [2026-07-02 Thu 23:34]
 [[file:~/dev/wing/wing/code/TODO::- bought 3d model on cgtrader had to flip UVs vertically cause fbx]]
+**To add custom properties to an object in blender using the
+Python CLI
+
+#+BEGIN_SRC python
+>>> import bpy
+>>> obj = bpy.content.object
+Traceback (most recent call last):
+  File "<blender_console>", line 1, in <module>
+AttributeError: module 'bpy' has no attribute 'content'
+
+>>> obj = bpy.context.object
+>>> print(obj.keys())
+<IDPropertyGroupViewKeys "user_properties">
+
+>>> print(dict(obj.items()))
+{'prop': 'prop_'}
+
+>>> print(dict(obj.items()))
+{'prop': 'prop_', 'prop1': '1.0'}
+
+>>> obj["prop_asset"] = "tree_pine_01.glb"
+>>> print(dict(obj.items()))
+{'prop_asset': 'tree_pine_01.glb'}
+#+END_SRC
+
+[2026-07-22 Wed 21:29]
+** bought 3d model on cgtrader had to flip UVs vertically cause fbx
+  was made for directX / unreal so in UV editor in Blender I did
+  object mode select all, then edit mode, switch to UV editor hit A to select all UV islands
+  S Y -1 enter - to flip all UVs vertically
+[2026-07-22 Wed 21:37]
+[[file:c:/dev/org/gamedev/d3d11.org]]
+**using imagick to negate green channel to convert normal from directx
+to opengl
+
+magick id_1_wings_Normal_DirectX.png -channel G -negate id_1_wings_Normal_OpenGL.png
+[2026-07-22 Wed 21:37]
+[[file:c:/dev/org/gamedev/d3d11.org]]

@@ -1,0 +1,11 @@
+* Inbox
+** **string? means that the string can be NULL
+
+internal static class - internal is access modifier meaning it is visible within the same assembly (exe or dll)
+                        static meaning class cannot be instantiated since I'm trying to avoid OOP
+
+public    - everywhere
+internal  - same assembly only
+private   - only inside the same class
+protected - in derived classes only
+[2026-07-19 Sun 20:14]
