@@ -59,3 +59,11 @@ dumpbin /headers game-vk.dll
 #+END_SRC
 you can then check the Debug Directories section for the name of the pdb file, the age, and GUID
 [2026-07-31 Fri 15:07]
+** When troubleshooting clangd you can run this, having hot_reload.c error in emacs show hot_reload does not exist
+& "C:\Program Files\clang+llvm-18.1.8\bin\clangd.exe" --check=C:\dev\wing\wing\code\game.c
+but it is there and I defined where to find that include in the .clangd file
+
+so update the .clangd or if using linux compile_commands.json with bear
+then do "eglot-reconnect" and the errors should go away
+[2026-08-02 Sun 17:55]
+[[file:c:/dev/wing/wing/code/game.c::include "hot_reload.h"]]
