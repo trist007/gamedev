@@ -18,3 +18,29 @@ the begin_frame solved the issue
     #+END_SRC
 
 [2026-07-21 Tue 18:03]
+** It can be difficult to pinpoint a VkBuffer that you missed releasing and the debugger
+will only show the driver handle which is not very useful.  The best tool is to enable
+the VK_EXT_debug_utils extension and give each VkBuffer a name upon creation
+
+VkBufferCreateInfo uBufferCI = {
+    .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+    .size  = sizeof(struct ShaderData),
+    .usage = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | 
+        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
+};
+
+VK_CHECK(vkCreateBuffer(engine->device, &uBufferCI, NULL,
+            &engine->frames[i].shaderDataBuffers.buffer));
+
+// Name it right after creation, while you still know exactly what it is
+char nameBuf[64];
+snprintf(nameBuf, sizeof(nameBuf), "shaderDataBuffer_frame%d", i);
+
+VkDebugUtilsObjectNameInfoEXT nameInfo = {
+    .sType        = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+    .objectType   = VK_OBJECT_TYPE_BUFFER,
+    .objectHandle = (uint64_t)engine->frames[i].shaderDataBuffers.buffer,
+    .pObjectName  = nameBuf,
+};
+vkSetDebugUtilsObjectNameEXT(engine->device, &nameInfo);
+[2026-07-31 Fri 13:39]

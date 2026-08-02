@@ -47,3 +47,34 @@ to opengl
 magick id_1_wings_Normal_DirectX.png -channel G -negate id_1_wings_Normal_OpenGL.png
 [2026-07-22 Wed 21:37]
 [[file:c:/dev/org/gamedev/d3d11.org]]
+**To select only verties and faces that are linked in Object Mode
+hover over face and hit L
+[2026-07-31 Fri 13:57]
+[[file:c:/dev/org/gamedev/blender.org::*bought 3d model on cgtrader had to flip UVs vertically cause fbx][bought 3d model on cgtrader had to flip UVs vertically cause fbx]]
+**For precise cursor control you can use Shift+S 
+[2026-07-31 Fri 14:09]
+[[file:c:/dev/org/gamedev/shaders.org]]
+**Hide everything except the selection Shift+H 
+[2026-07-31 Fri 14:37]
+[[file:c:/dev/org/gamedev/blender.org::*bought 3d model on cgtrader had to flip UVs vertically cause fbx][bought 3d model on cgtrader had to flip UVs vertically cause fbx]]
+**GLB file format does have a section called extras under the asset section where one can
+include a description if needed
+#+BEGIN_SRC json
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "Blender v4.x",
+    "extras": {
+      "description": "This is a detailed description of my 3D model."
+    }
+  }
+}
+#+END_SRC
+[2026-07-31 Fri 20:25]
+**Before you parent a mesh to an armature always Apply Rotation and Scale transforms, after parenting
+to armature with automatic weights, apply rotation and scale to armature, then when parenting armature
+to fuselage just do object DO NOT USE keep transform, unless armature/mesh are in the correct position
+[2026-08-01 Sat 18:41]
+**For propeller when parenting to fuselage DO NOT apply rotation and scale to propeller but do keep
+transform when parenting to fuselage.
+[2026-08-01 Sat 18:47]

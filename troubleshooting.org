@@ -3,3 +3,18 @@
 a func with 0x0 then print out the %p pointers for each function before and after functions in case
 the pointers get corrupted
 [2026-07-19 Sun 19:35]
+**When troubleshooting missing meshes like the front landing gear 3d mesh which is under its
+armature, you can insert this log right before the vkCmdDrawIndexed call in drawModelMatrix
+
+LOGG("Primitive %u draw: indexCount=%u firstIndex=%u vertexOffset (via bind)=0", i, prim->triCount * 3, prim->triOffset * 3);
+
+then go to RenderDoc capture a frame and look for the vkCmdDrawIndexed call with the matching indexCount and firstIndex
+and view the mesh viewer and check the VS Output Position values or even go to the Texture Viewer tab
+
+Also in the loadModel with the data->nodes_count for loop you can see the nodes
+        LOGG("Mesh %zu belongs to node '%s'", m, node->name ? node->name : "(unnamed)");
+as well as the primitive
+      LOGG("Primitive %u (mesh %zu): hasJoints=%d hasWeights=%d",
+
+so you can identify the relevant draw call in renderDoc
+[2026-08-01 Sat 18:10]

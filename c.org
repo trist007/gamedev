@@ -47,3 +47,15 @@ then do ctrl+shift+p and restart intellisense or restart intellisense server / a
 **for Intellisense to work properly in VsCode be sure to use bear to create
 the compile_commands.json file
 [2026-07-20 Mon 21:47]
+**the GUIDs have to match otherwise debugging will fail.  For example I had game.dll which would give
+game.pdb but I had two versions one for vk and another for d3d11 so whichever compiled last I could
+debug properly.  To solve I made two versions depending on which renderer was used game-vk.pdb or
+game-d3d11.pdb.
+
+You can verify which GUID the .dll or .exe expects with
+#+BEGIN_SRC bat
+dumpbin /headers wing.exe
+dumpbin /headers game-vk.dll
+#+END_SRC
+you can then check the Debug Directories section for the name of the pdb file, the age, and GUID
+[2026-07-31 Fri 15:07]

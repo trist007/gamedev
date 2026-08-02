@@ -1,0 +1,4 @@
+* Inbox
+**When using the color picker hold down Shift to sample the pure
+unlit color data directly from your layer texture
+[2026-07-31 Fri 18:37]
