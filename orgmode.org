@@ -1,0 +1,4 @@
+* Inbox
+** To underline text put underscores around the text _sick_
+To emphasise/italicize text put front slashes around the text /sick/
+[2026-08-09 Sun 17:18]

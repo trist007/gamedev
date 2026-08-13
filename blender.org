@@ -78,3 +78,18 @@ to fuselage just do object DO NOT USE keep transform, unless armature/mesh are i
 **For propeller when parenting to fuselage DO NOT apply rotation and scale to propeller but do keep
 transform when parenting to fuselage.
 [2026-08-01 Sat 18:47]
+** When doing _Inverse Kinematics_ unparent the IK bone, then in Pose mode click on the IK bone then shift
+click on the last bone in the chain and hit /shift I/ and select "To Active Bone" also and that last bone
+be sure to set the the Chain Length in the bone constraint of IK from 0 which is infinite to 2 if that is what fits
+your scenario
+[2026-08-12 Wed 13:51]
+[[file:c:/dev/wing/wing/code/common/game.h::include "bvh.h"]]
+** You will want to bake an animation when another animation will not work because of the bone
+constraints like when trying to retract landing gear but the spring and top ring won't move because
+they have bone constraints that were needed to stretch to
+
+Baking instructions 
+
+specify start and end frame and check mark /only selected bones/ /visual keyring/
+/clear constraints/ and only need Location, Rotation, and Scale, make sure bake data is set to Pose
+[2026-08-12 Wed 14:56]
