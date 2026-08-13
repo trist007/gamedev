@@ -1,5 +1,6 @@
 * Inbox
 [2026-08-12 Wed 20:45]
+Wing Gameplay TODOs [0/63] [0%]
   - [ ] tighten collision to wheel offsets so plane movement is dynamic
   - [ ] screen for plane upgrades
   - [ ] put chickens in the game make golden chicks special
