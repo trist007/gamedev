@@ -19,3 +19,17 @@ SPC f p - edit configs
 #+end_src
 [2026-07-02 Thu 23:15]
 [[file:~/.config/doom/config.el:::desc "elfeed" "o y" #'elfeed)]]
+** To restart the lsp after making changes to .clangd run eglot-reconnect
+[2026-08-08 Sat 22:36]
+[[file:c:/dev/3drenderer/src/main.c::///////////////////////////////////////////////////////////////////////]]
+** to completely do a restart of lsp server run
+eglot-shutdown
+eglot
+[2026-08-08 Sat 22:40]
+[[file:c:/dev/3drenderer/src/display.h::extern u32 *color_buffer;]]
+** When using vim's sed replace for case sensitivity use \C so for example
+s/\Cvkcmd/cmd/g
+
+so it only matches vkcmd and not Vkcmd
+[2026-08-11 Tue 19:08]
+[[file:c:/dev/wing/wing/code/vulkan/sitcha_vk.c::upload_texture_from_file(e, path, true);]]

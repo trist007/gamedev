@@ -67,3 +67,164 @@ so update the .clangd or if using linux compile_commands.json with bear
 then do "eglot-reconnect" and the errors should go away
 [2026-08-02 Sun 17:55]
 [[file:c:/dev/wing/wing/code/game.c::include "hot_reload.h"]]
+*** %zu  - size_t (unsigned)
+%zd  - ssize_t / signed version, though ssize_t isn't standard C, more POSIX (Windows doesn't have it natively)
+%u   - uint8_t, uint16_t, uint32_t
+%d   - int8_t, int16_t, int32_t
+%llu - uint64_t
+%lld - int64_t
+%td  - ptrdiff_t
+[2026-08-02 Sun 21:47]
+** building a compile_commands.json for the emacs eglot lsp server
+
+===============================================================
+// Building compile_commands.json
+===============================================================
+build_trace.bat imgui   > build_log.txt 2>&1
+build_trace.bat imgui2  >> build_log.txt 2>&1
+build_trace.bat engine  >> build_log.txt 2>&1
+build_trace.bat engine2 >> build_log.txt 2>&1
+build_trace.bat game    >> build_log.txt 2>&1
+build_trace.bat game2   >> build_log.txt 2>&1
+build_trace.bat main    >> build_log.txt 2>&1
+
+python gen_compile_commands.py build_log.txt compile_commands.json "C:\dev\wing\wing\build"
+
+here is the gen_compile_commands.py
+
+#+BEGIN_SRC python
+#!/usr/bin/env python3
+"""
+Generate compile_commands.json from a Windows cmd.exe build log containing
+literal `cl ...` invocations (MSVC). compiledb/bashlex can't handle Windows
+paths or recognize `cl` as a compiler, so this parses the log directly.
+
+Some of your targets (game, game2, main) compile+link in ONE cl invocation
+(no /c flag, with a trailing /link section and multiple source files at
+once). That raw command line isn't a valid standalone COMPILE job -- clangd
+needs one compile-only command per file. This script synthesizes a clean
+compile-only command for each file: it strips everything from /link onward,
+drops link-output flags (/LD, /Fe:, etc.), removes sibling source files, and
+ensures /c is present.
+
+Usage:
+    python gen_compile_commands.py build_log.txt compile_commands.json <directory>
+
+<directory> should be the working directory the cl.exe calls were actually
+run from (e.g. C:\\dev\\wing\\wing\\build, since build.bat does `pushd ..\\build`
+before invoking cl).
+"""
+import sys
+import json
+import re
+
+SOURCE_EXTS = ('.c', '.cpp', '.cc', '.cxx')
+
+
+def tokenize(command_line):
+    """Whitespace tokenizer that keeps double-quoted tokens intact."""
+    return re.findall(r'"[^"]*"|\S+', command_line)
+
+
+def find_source_files(command_line):
+    """Pull out source file tokens (.c/.cpp/.cc/.cxx) from a cl command line."""
+    tokens = tokenize(command_line)
+    sources = []
+    for tok in tokens:
+        stripped_tok = tok.strip('"')
+        if stripped_tok.lower().endswith(SOURCE_EXTS):
+            sources.append(stripped_tok)
+    return sources
+
+
+def build_clean_command(command_line, target_file):
+    """
+    Synthesize a clean COMPILE-ONLY command for `target_file` from a raw
+    cl command line that may compile+link several files in one shot.
+    """
+    tokens = tokenize(command_line)
+
+    # Truncate everything from /link (or /LINK) onward.
+    link_idx = None
+    for i, tok in enumerate(tokens):
+        if tok.strip('"').lower() == '/link':
+            link_idx = i
+            break
+    if link_idx is not None:
+        tokens = tokens[:link_idx]
+
+    # Drop link-output-only flags irrelevant to a compile-only job.
+    drop_prefixes = ('/ld', '/fe:', '/fe', '/out:', '/implib:', '/pdb:')
+    tokens = [t for t in tokens
+              if not any(t.strip('"').lower().startswith(p) for p in drop_prefixes)]
+
+    # Drop all source-file tokens except index 0 (the compiler name itself,
+    # which never matches a source extension) -- we'll append target_file.
+    out = []
+    for i, tok in enumerate(tokens):
+        stripped = tok.strip('"')
+        if i > 0 and stripped.lower().endswith(SOURCE_EXTS):
+            continue
+        out.append(tok)
+    tokens = out
+
+    # Ensure /c (compile-only) is present.
+    if not any(t.strip('"').lower() == '/c' for t in tokens):
+        tokens.insert(1, '/c')
+
+    tokens.append(target_file)
+    return ' '.join(tokens)
+
+
+def main():
+    if len(sys.argv) != 4:
+        print("Usage: gen_compile_commands.py <build_log.txt> <compile_commands.json> <directory>")
+        sys.exit(1)
+
+    log_path, out_path, directory = sys.argv[1], sys.argv[2], sys.argv[3]
+
+    entries = []
+    seen_files = set()
+
+    with open(log_path, 'r', encoding='utf-8', errors='replace') as f:
+        for raw_line in f:
+            stripped = raw_line.rstrip('\n').strip()
+            if not stripped.lower().startswith('cl'):
+                continue
+
+            command_line = stripped
+            sources = find_source_files(command_line)
+            if not sources:
+                continue
+
+            # Was this originally a compile-only (/c) invocation of a
+            # SINGLE file? Then the raw command is already fine as-is.
+            tokens = tokenize(command_line)
+            has_c = any(t.strip('"').lower() == '/c' for t in tokens)
+            single_file = len(sources) == 1
+
+            for src in sources:
+                if has_c and single_file:
+                    cmd = command_line
+                else:
+                    cmd = build_clean_command(command_line, src)
+
+                key = src.lower()
+                entry = {"directory": directory, "command": cmd, "file": src}
+                entries = [e for e in entries if e["file"].lower() != key]
+                entries.append(entry)
+                seen_files.add(key)
+
+    with open(out_path, 'w', encoding='utf-8') as f:
+        json.dump(entries, f, indent=2)
+
+    print(f"Wrote {len(entries)} entries to {out_path}")
+    print(f"Source files found: {sorted(seen_files)}")
+
+
+if __name__ == '__main__':
+    main()
+#+END_SRC
+
+
+[2026-08-10 Mon 17:08]
