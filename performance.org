@@ -1,0 +1,8 @@
+* Inbox
+** unit prefixes for seconds
+
+10^-3 = milliseconds 1,000 ms         = 1 second
+10^-6 = microseconds 1,000,000 ms     = 1 second
+10^-9 = nanoseconds  1,000,000,000 ms = 1 second
+[2026-08-25 Tue 13:39]
+[[file:c:/dev/wing/wing/code/ui.c]]

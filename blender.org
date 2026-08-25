@@ -93,3 +93,37 @@ Baking instructions
 specify start and end frame and check mark /only selected bones/ /visual keyring/
 /clear constraints/ and only need Location, Rotation, and Scale, make sure bake data is set to Pose
 [2026-08-12 Wed 14:56]
+** When adding a driver from empty to empty click on other empty and right click on Rotation Y
+add driver the type is Scripted Expression, the expression -var, the type of variable is Transform Channel
+Type is Y rotation and Space is Transform space, then move the main empty
+[2026-08-15 Sat 19:40]
+[[file:c:/dev/org/gamedev/blender.org::*You will want to bake an animation when another animation will not work because of the bone][You will want to bake an animation when another animation will not work because of the bone]]
+** To export in blender using python cli select what you want to export then run
+#+BEGIN_SRC python
+import bpy
+
+bpy.ops.export_scene.gltf(
+    filepath="C:/dev/wing/wing/data/models/canard-frontlandingbay-left.glb",
+    export_format='GLB',
+    use_selection=True,   # export whole scene; set True to export only selected objects
+    export_yup=True,       # matches your +Y Up setting
+)
+#+END_SRC
+
+[2026-08-16 Sun 14:16]
+[[file:c:/dev/wing/wing/code/game.c]]
+** When making adjustments like scale before you hit S the further away the mouse is from the center of
+the screen the more subtle the change will be
+[2026-08-20 Thu 11:53]
+** To understand where in the world a mesh gets placed, look at the nodes section and translation
+which is in relation to the parent, if no parent the from the world origin
+
+{
+  "scenes": [{ "nodes": [0] }],
+  "nodes": [
+    { "children": [1], "translation": [10, 0, 0] },
+    { "mesh": 0, "translation": [0, 5, 0] }
+  ]
+}
+[2026-08-22 Sat 14:29]
+[[file:c:/dev/wing/wing/code/vulkan/vk_engine.c::static struct VulkanEngine* s_engine = 0;]]

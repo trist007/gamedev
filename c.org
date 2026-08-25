@@ -228,3 +228,18 @@ if __name__ == '__main__':
 
 
 [2026-08-10 Mon 17:08]
+** when checking to see if a .lib is 32 or 64 bit use dumpbin /headers | findstr machine
+[2026-08-22 Sat 00:45]
+[[file:c:/dev/ogldev/Terrain1/build.bat::glew32.lib assimp-vc143-mt.lib glfw3dll.lib meshoptimizer.lib freeglut.lib opengl32.lib user32.lib]]
+** Memory arenas
+|---------------------+--------------------------+------------------------------|
+| Feature             | static uint8_t Array     | VirtualAlloc                 |
+|---------------------+--------------------------+------------------------------|
+| Allocation Time     | Program startup          | Runtime execution            |
+| Size Flexibility    | Hardcoded                | Dynamic                      |
+| Executable Size     | Can make .exe very large | Keeps .exe small             |
+| Overflow Protection | None (silent corruption) | Excellent (via Guard Pages)  |
+| OS Portability      | Universal (Standard C)   | Windows Only (mmap on Linux) |
+|---------------------+--------------------------+------------------------------|
+[2026-08-23 Sun 07:17]
+[[file:c:/dev/wing/wing/code/main.c::static uint8_t gameStorage\[512 * 1024 * 1024\];]]

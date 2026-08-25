@@ -33,3 +33,10 @@ s/\Cvkcmd/cmd/g
 so it only matches vkcmd and not Vkcmd
 [2026-08-11 Tue 19:08]
 [[file:c:/dev/wing/wing/code/vulkan/sitcha_vk.c::upload_texture_from_file(e, path, true);]]
+** To auto indent a range use C-M-\
+[2026-08-20 Thu 15:29]
+[[file:c:/dev/wing/wing/code/playerPlane.c::const float gearRetractSpeed = 0.6f;]]
+** To change a variable locally you can do eval-buffer
+M-: (setq-local evil-shift-width 2)
+[2026-08-20 Thu 15:31]
+[[file:c:/dev/wing/wing/code/playerPlane.c::lo]]

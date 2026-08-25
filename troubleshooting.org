@@ -18,3 +18,11 @@ as well as the primitive
 
 so you can identify the relevant draw call in renderDoc
 [2026-08-01 Sat 18:10]
+** if a breakpoint keeps getting hit that shouldn't be getting hit then usually you recompiled the Vulkan DLLL and not the D3D11 DLL and you are running the D3D11 DLL, or you have not updated the PDB file that goes with that specific DLL
+[2026-08-20 Thu 16:18]
+[[file:c:/dev/wing/wing/code/playerPlane.c::updateGear(p, keys\[SDL_SCANCODE_G\], fdt)/* ; */]]
+** if you have the pdb and cannot step into a func then most likely the .obj got overwritten
+by another build targets compilation, make dll and remove the obj from that offending build targets
+compilation
+[2026-08-23 Sun 17:59]
+[[orgit:c:/dev/wing/][c:/dev/wing/ (magit-status)]]
