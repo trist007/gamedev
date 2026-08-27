@@ -1,6 +1,8 @@
 * Inbox
 [2026-08-12 Wed 20:45]
 Wing Gameplay TODOs [5/88] [5%]
+  - [ ] work on the d3d11 side to replace IMGUI with microUI
+  - [ ] work on the linux / x11 side of removing SDL and IMGUI and implementing microUI
   - [ ] rudder
   - [ ] flaps
   - [ ] scale (may not be necessary)
@@ -17,7 +19,12 @@ Wing Gameplay TODOs [5/88] [5%]
   - [ ] add pipelines to renderers to drawCircle
   - [ ] vulkan renderer drawline should have its own buffers not sharing with 3d pipeline
     
+  - [ ] implement fortune-cookie for random quote on doom emacs dashboard
+  - [ ] include a getVersion function for both sitcha and platano for debugging so we know which version had the bug
+        if (Version != SITCHA_VERSION) stderr
+  - [ ] look into shadow maps to start implementing shadow maps easier to land if you can see your shadow
   - [X] cloc for checking lines of code
+  - [ ] finish build-tcc for quicker iteration as raddbg will eventually support dwarf debug
   - [ ] add wayland support to platano
   - [X] microui to replace cimgui
   - [ ] snapshot to reload state snapshot of volative ram into save.bin

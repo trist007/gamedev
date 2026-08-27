@@ -1,0 +1,10 @@
+* Inbox
+** To reverse engineering dwarf
+
+1) file
+2) readelf
+3) binwalk
+4) hexdump
+5) objdump
+6) gdb
+[2026-08-27 Thu 11:21]

@@ -243,3 +243,30 @@ if __name__ == '__main__':
 |---------------------+--------------------------+------------------------------|
 [2026-08-23 Sun 07:17]
 [[file:c:/dev/wing/wing/code/main.c::static uint8_t gameStorage\[512 * 1024 * 1024\];]]
+** Read file into buffer
+#+BEGIN_SRC C
+  FILE* file_ptr = NULL;
+
+  errno_t err = fopen_s(&file_ptr, pFilename, "r");
+  if (err != 0 || file_ptr == NULL)
+  {
+    fprintf(stderr, "Error opening file error: %d\n", err);  
+    return(false);
+  }
+
+  char* buffer = NULL;
+  long fileSize = 0;
+
+  fseek(file_ptr, 0, SEEK_END);
+  fileSize = ftell(file_ptr);
+  fseek(file_ptr, 0, SEEK_SET);
+    
+  buffer = (char*)malloc(fileSize + 1);
+  fread(buffer, 1, fileSize, file_ptr);
+  buffer[fileSize] = '\0';
+  fclose(file_ptr);
+
+  size_t bytes_read = fread(buffer, 1, fileSize, file_ptr);
+#+END_SRC
+[2026-08-27 Thu 09:06]
+[[file:c:/dev/cielo/cielo/code/terrain_demo1.cpp::FILE* file_ptr = NULL;]]
