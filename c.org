@@ -270,3 +270,68 @@ if __name__ == '__main__':
 #+END_SRC
 [2026-08-27 Thu 09:06]
 [[file:c:/dev/cielo/cielo/code/terrain_demo1.cpp::FILE* file_ptr = NULL;]]
+** Carmack advice
+
+If a function is only called from a single place, consider inlining it.
+
+If a function is called from multiple places, see if it is possible to arrange for the work to be done in a single place, perhaps with flags, and inline that.
+
+If there are multiple versions of a function, consider making a single function with more, possibly defaulted, parameters.
+
+If the work is close to purely functional, with few references to global state, try to make it completely functional.
+
+Try to use const on both parameters and functions when the function really must be used in multiple places.
+
+Minimize control flow complexity and “area under ifs”, favoring consistent execution paths and times over “optimally” avoiding unnecessary work.
+
+[2026-09-01 Tue 15:10]
+[[file:c:/dev/org/gamedev/performance.org::*unit prefixes for seconds][unit prefixes for seconds]]
+** with clang errors on drv_unsupported_opt_with_suggestion unsupported options -x objevctive-c++-header you need to remove -x and also remove h from the PathMatch for C++ headers
+
+CompileFlags:
+  Compiler: cl
+  Add:
+    - /IC:\dev\cielo\cielo\code
+    - /IC:\dev\cielo\cielo\code\glad
+    - /IC:\dev\cielo\cielo\code\KHR
+    - /IC:\dev\cielo\cielo\code\assimp5
+  Remove: [-x]
+---
+
+If:
+  PathMatch: .*\.(c|h)$
+CompileFlags:
+  Add: /TC
+
+---
+
+If:
+  PathMatch: .*\.(cpp|cc|cxx|hpp)$
+CompileFlags:
+  Add: /TP
+** C++ Smart Pointers
+#+BEGIN_SRC C
+std::unique_ptr<Entity> entity = std::make_unique<Entity>();
+std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+#+END_SRC
+unique_ptr - will be free when out of scope
+shared_ptr - has a reference count and increments it and keeps track, once reference count is 0 it will free it 
+weak_ptr - does not add to the reference count
+
+don't need to call new or delete with these smart pointers
+[2026-09-03 Thu 11:58]
+[[file:c:/dev/cielo/.clangd::Compiler: cl]]
+** To see if an int is a power of two you can compare bit represenation to see if any of the columns
+are similar, if they are different then the value is a power of two
+#+BEGIN_SRC C
+int
+isValuePowerOfTwo(int n)
+{
+ if ((n & (n - 1)) == 0)
+  return 1;
+ else
+  return 0;
+}
+#+END_SRC
+[2026-09-03 Thu 16:17]
+[[file:c:/dev/cielo/cielo/code/terrain.c::int]]
