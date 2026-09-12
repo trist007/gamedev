@@ -19,3 +19,45 @@ Vector3f normalizeFloat3(Vector3f vector) {
 
 [2026-08-27 Thu 08:59]
 [[file:c:/dev/cielo/cielo/code/terrain_demo1.cpp::Matrix4f projection;]]
+** Vector lengths use the Pythagorean algorithm a2 + b2 = c2
+
+#+BEGIN_SRC C
+float
+vec2_length(vec2_t v)
+{
+  return sqrt((v.x * v.x) + (v.y * v.y));
+}
+
+float
+vec3_length(vec3_t v)
+{
+  return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+}
+#+END_SRC
+[2026-09-11 Fri 18:46]
+[[file:c:/dev/3drenderer/src/vector.c::float]]
+
+* Vector Cross Product - outputs a perpendicular vector
+This brings the perpendicular output
+
+X  = _VecA - VecB_
+Nx =  AyBz - AzBy
+Ny =  AzBx - AxBz
+Nz =  AxBy - AyBx
+
+Magnitude of the Cross Product || a x b || = || a || || b || sin0
+
+*The face where the vertices were created CCW will be where the normal faces*
+*If the face has its vertices created CW then the normal faces away*
+*Whereas if the has has its vertices created CCW then the normal faces in*
+
+Normals are only for Vector 3D
+Triangle points ABC
+(B - A) x (C - A) = Normal (Perpendicular Vector) 90 degree angle from triangle face
+
+* Vector Dot Product - outputs a scalar float, tests how /aligned/ the two vectors are
+Projects VecB onto VecA 
+
+If both vectors are perfectly aligned (laying on top of each other) then dot product is 1.0
+If vectors are 90 degree from each other then dot product is 0.0 (Perpendicular) _no projection_
+If vectors are more than 90 degrees then dot product become - and if completely opposite then -1.0

@@ -40,3 +40,29 @@ so it only matches vkcmd and not Vkcmd
 M-: (setq-local evil-shift-width 2)
 [2026-08-20 Thu 15:31]
 [[file:c:/dev/wing/wing/code/playerPlane.c::lo]]
+** M-x toggle-debug-on-quit - during freezes hit C-g a few times and you will get a backtrace that points straight
+back to the guilty package or function
+[2026-09-05 Sat 11:45]
+[[file:c:/dev/org/gamedev/engine-architecture.org]]
+** If magit cannot see the .git directory it is git refusing to access dueo to dubious ownership
+
+git config --global --add safe.directory c:/dev/3drenderer
+[2026-09-08 Tue 11:36]
+[[orgit:c:/dev/3drenderer/][c:/dev/3drenderer/ (magit-status)]]
+** To see if emacs can see an executable
+M-x eval-expression
+(executable-find "clang-format")
+[2026-09-10 Thu 20:21]
+[[file:c:/dev/3drenderer/src/mesh.c::}]]
+** eglot would put curly braces on the same line until I updated the .clang-format file with
+BreakBeforeBraces: Allman
+[2026-09-10 Thu 21:02]
+[[file:c:/dev/3drenderer/.clang-format::BreakBeforeBraces: Allman]]
+** To mark files with same file extension in dired
+% m
+\.bat$
+[2026-09-11 Fri 15:40]
+[[file:c:/dev/3drenderer/clean.bat]]
+** In dired to unmark all files M-del
+[2026-09-11 Fri 15:41]
+[[file:c:/dev/3drenderer/clean.bat]]

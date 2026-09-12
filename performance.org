@@ -9,3 +9,8 @@
 
 [2026-08-25 Tue 13:39]
 [[file:c:/dev/wing/wing/code/ui.c]]
+** Avoid division and floats altogether if you want better performance
+[2026-09-08 Tue 15:04]
+** static array sizes so you can be informed when that limit has been reached, used power of 2 number
+[2026-09-08 Tue 21:37]
+[[file:c:/dev/3drenderer/src/main.c::triangles_to_render\[i\] = projected_triangle;]]

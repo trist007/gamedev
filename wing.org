@@ -20,8 +20,10 @@ Wing Gameplay TODOs [5/88] [5%]
   - [ ] vulkan renderer drawline should have its own buffers not sharing with 3d pipeline
     
   - [ ] implement fortune-cookie for random quote on doom emacs dashboard
+  - [ ] write a PNG parser
   - [ ] include a getVersion function for both sitcha and platano for debugging so we know which version had the bug
         if (Version != SITCHA_VERSION) stderr
+  - [ ] run pvs-studio, pc-lint(visual studio), cpp-check, clang-tidy and cl.exe /analyze for static analysis
   - [ ] look into shadow maps to start implementing shadow maps easier to land if you can see your shadow
   - [X] cloc for checking lines of code
   - [ ] finish build-tcc for quicker iteration as raddbg will eventually support dwarf debug
