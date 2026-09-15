@@ -1,3 +1,13 @@
+* Performance Fundamentals
+- in header files forward declare all structs so you can use pointers to the structs
+  we know how big the struct is because it is a pointer, this speeds up compilation
+- Use power of 2 values so that a single bit shifting instruction can be used for division 
+- Avoid unpredictable branches in switch statements
+- If things are so hetergenous then separate them into separate arrays
+- Structure of arrays
+- Allocate sequentially so data can be in the same cache line
+- Pack things small
+  
 * Inbox
 ** unit prefixes for seconds
 

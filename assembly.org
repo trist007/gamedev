@@ -13,3 +13,5 @@ the arithmetic one perserves the signed bit
 [[orgit:c:/dev/cielo/][c:/dev/cielo/ (magit-status)]]
 
 8086-assembly-instructions.png
+
+2^3

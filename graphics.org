@@ -23,3 +23,11 @@ project(vec3_t point)
 
 [2026-09-11 Fri 15:44]
 [[file:c:/dev/3drenderer/src/main.c::vec2_t]]
+** Y+ based on renderer, as Y increases do the scanlines go up or down the screen?
+
+SDL - goes down 
+OpenGL - goes up
+Vulkan - goes down
+D3D11 - goes down mostly
+[2026-09-13 Sun 16:36]
+[[file:c:/dev/3drenderer/src/main.c::render_color_buffer();]]

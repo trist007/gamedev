@@ -1,3 +1,6 @@
+* Features
+** Multi-Cursor
+Once on the match hit gzm and multiple cursors will appear on all the matches
 * Inbox
 ** For multicursor have the cursor on the match and do "gzm"
 [2026-06-30 Tue 22:54]

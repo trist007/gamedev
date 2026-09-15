@@ -20,6 +20,7 @@ Wing Gameplay TODOs [5/88] [5%]
   - [ ] vulkan renderer drawline should have its own buffers not sharing with 3d pipeline
     
   - [ ] implement fortune-cookie for random quote on doom emacs dashboard
+  - [ ] replaced HandmadeMath with cglm
   - [ ] write a PNG parser
   - [ ] include a getVersion function for both sitcha and platano for debugging so we know which version had the bug
         if (Version != SITCHA_VERSION) stderr

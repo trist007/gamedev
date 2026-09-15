@@ -37,6 +37,14 @@ vec3_length(vec3_t v)
 [2026-09-11 Fri 18:46]
 [[file:c:/dev/3drenderer/src/vector.c::float]]
 
+* Slope
+Slope of X - the changing Y given that X is going to increment by 1
+m = (y2 - y1) / (x2 - x1);
+
+* Inverse Slope
+Slope of Y - the changing X given that Y is going to increment by 1
+m = (x2 - x1) / (y2 - y1);
+
 * Vector Cross Product - outputs a perpendicular vector
 This brings the perpendicular output
 
@@ -61,3 +69,494 @@ Projects VecB onto VecA
 If both vectors are perfectly aligned (laying on top of each other) then dot product is 1.0
 If vectors are 90 degree from each other then dot product is 0.0 (Perpendicular) _no projection_
 If vectors are more than 90 degrees then dot product become - and if completely opposite then -1.0
+These are only true if both vectors are unit vectors where each value is 1.0
+
+2D
+A x B = AxBx + AyBy
+
+3D
+A x B x C = AxBxCx + AyByCy
+
+* Culling Algorithm
+
+1. Find vectors B-A and C-A
+2. Take their Cross Product to get the Perpendicular Normal N
+3. Find the Camera Ray vector by subtracing the camera position from point A
+4. Take the Dot Product between the normal N and the Camera Ray
+
+Render if Dot Product is greater than 0.0 and do NOT Render if Dot Product is less than 0.0
+* Normalize Normal - gets the vector to 1.0
+v = v / || v ||
+#+BEGIN_SRC C
+void
+vec3_normalize(vec3_t* v)
+{
+  float length = (v->x * v->x) + (v->y * v->y) + (v->z * v->z);
+
+  v->x /= length;
+  v->y /= length;
+  v->z /= length;
+}
+#+END_SRC
+
+* Similar triangles - share ratio
+a / b = c / d
+           (x0,y0)
+             |\
+             | \
+        c    |  \
+             |   \
+d  (x1,y1)   |____\(Mx,My)
+             |  a  \
+             |      \
+             |       \
+             |        \
+             |_________\(x2,y2)
+                  b
+
+Mx - x0 / x2 - x0 = y1 - y0 / y2 - y0
+
+a   c
+_ = _
+b   d
+
+(Mx-x0)(y2-y0) = (x2-x0)(y1-y0)
+
+Mx - x0 = (x2-x0)(y1-y0) / (y2-y0)
+
+*Mx = (x2-x0)(y1-y0) / (y2-y0) + x0*
+* Painter's Algorithm - sort triangles by face's avg_depth
+Each triangle has 3 vertices so
+
+avg_depth = (v1.z + v2.z + v3.z) / 3
+
+Then sort the triangles based on their depth so you can have the triangles that are farthest be drawn first
+* Sorting Algorithms
+
+|-----------+----------------------+--------------+------------------+-------------|
+| Algorithm | Comparisons          | Swaps (best) | Swaps (worst)    | Early exit? |
+|-----------+----------------------+--------------+------------------+-------------|
+| bubble    | O(n²) worst case     | O(n)         | O(n²) worst case | Yes         |
+| selection | Always exactly O(n²) | O(n²)        | O(n²) worst case | No          |
+|-----------+----------------------+--------------+------------------+-------------|
+
+Radix sort
+Merge sort
+Quick sort
+** Selection sort
+#+begin_src C
+// Sort the triangles to render by their avg_depth
+    int num_triangles = array_length(triangles_to_render);
+    for (int i = 0; i < num_triangles; i++) {
+        for (int j = i; j < num_triangles; j++) {
+            if (triangles_to_render[i].avg_depth < triangles_to_render[j].avg_depth) {
+                // Swap the triangles positions in the array
+                triangle_t temp = triangles_to_render[i];
+                triangles_to_render[i] = triangles_to_render[j];
+                triangles_to_render[j] = temp;
+            }
+        }
+    }
+#+end_src
+
+** Bubble sort
+#+BEGIN_SRC C
+  int changes = 0;
+  int len = array_length(triangles_to_render);
+  if (!triangles_to_render) abort();
+  do
+  {
+    changes = 0;
+    for (int i = 0; i < len - 1; i++)
+    {
+      if (triangles_to_render[i].avg_depth < triangles_to_render[i + 1].avg_depth)
+      {
+        tri_swap(&triangles_to_render[i], &triangles_to_render[i + 1]);
+        changes++;
+      }
+    }
+    
+  } while (changes != 0);
+#+END_SRC
+* Matrices
+** Add/Subtract
+
+| 2 3 | + | 4 2 |
+| 1 8 |   | 1 3 |
+
+| 6 5  |
+| 2 11 |
+
+| 2 3 | - | 4 2 |
+| 1 8 |   | 1 3 |
+
+| -2 1 |
+|  0 5  |
+
+** Matrix Multiplication just like the Dot Product
+
+| 1 2 | x | 5 6 |
+| 3 4 |   | 7 8 |
+
+| (1*5) + (2*7) (1*6) + (2*8) |
+| (3*5) + (4+7) (3*6) + (4*8) |
+
+| 19 22 |
+| 43 50 |
+
+_Rules_ 
+N x M = M x P  
+/Can only do multiply matrix when number columns of the left matrix is equal to the number of rows of the right matrix/
+
+Result will have the number of rows of the 1st number of columns of the 2nd N x P
+
+A * B != B * A
+Matrix Multiplication is not commutative
+
+| 1 2 -1 | x | 3  1 |
+| 2 0  1 |   | 0 -1 |
+             | -2 3 |
+
+| (1*3) + (2*0) + (-1*-2) (1*1) + (2*-1) + (-1*3) |
+| (2*3) + (0*0) + (1*-2)  (2*1) + (0*-1) + (1*3)  |
+
+| 5  -4 |
+| 4   5 |
+
+| 44.5  65.3  -23.0   | x | 4  0  3  | (Cannot 3x3 multiplied by 2x3 *not* happening) |
+|  6.0   6.0    2.44  |   | 3 4.5 2 |                                                |
+| -3.4  -3.4   35.66  |   |         |                                                |
+
+/Can only do multiply matrix when number columns of the left matrix is equal to the number of rows of the right matrix/
+
+** Identity Matrix - a square matrix with 1s on the diagonal and 0s everywhere else
+
+| 1 0 0 0 |
+| 0 1 0 0 |
+| 0 0 1 0 |
+| 0 0 0 1 |
+
+if you multiply a matrix with identity matrix the diagonal keep the original values and the 0s
+make sure that none of the original values are changed
+
+any matrix multiplied by an identity matrix will have the original values of that matrix unchanged
+
+aka Unit matrix or Matrix eye
+** Rotation Matrix - linear transformation
+
+$X'$ = xcosA - ysinA
+$Y'$ = xsinA + ycosA
+
+#+begin_src C
+vec3_t
+vec3_rotate_z(vec3_t v, float angle)
+{
+    vec3_t rotated_vector = {
+        .x = v.x * cos(angle) - v.y * sin(angle),
+        .y = v.x * sin(angle) + v.y * cos(angle),
+        .z = v.z
+    };
+    return(rotated_vector);
+}
+#+end_src
+
+| $x'$ | = | cosA -sinA | * | x | = | xcosA - ysinA |
+| $y'$ |   | sinA  cosA |   | y |   | xsinA + ycosA |
+** Transformation Matrices - linear transformations
+mat4_t which is a 4x4 matrix
+
+4th column in mat4_t does Translation
+
+| m m m m |   | x |
+| m m m m | * | y |
+| m m m m |   | z |
+| m m m m |   | w | 
+
+Cannot do 4x4 and 3x1 so we add w
+w will be 1
+
+4x4 Matrices used for Scaling, Translation, and Rotation
+
+/Order is very important when doing Matrix Multiplication/
+
+1. Scale
+2. Rotation
+3. Translation
+
+Translation changes the center of reference so it needs to be done LAST!! It changes the origin
+while Scale and Rotation do not
+
+*** Scale Matrix - Linear origin does not change
+
+| sx 0  0  0 |   | x |
+| 0  sy 0  0 | * | y |
+| 0  0  sz 0 |   | z |
+| 0  0  0  1 |   | 1 |
+
+| (sx*x) + 0 + 0 + 0 |
+| 0 + (sy*y) + 0 + 0 |
+| 0 + 0 + (sz*z) + 0 |
+| 0 + 0 + 0 +  (1*1) |
+
+
+|sx*x|
+|sy*y|
+|sz*z|
+|  1 |
+
+#+begin_src C
+mat4_t mat4_make_scale(float sx, float sy, float sz)
+{
+    // | sx 0 0 0 |
+    // | 0 sy 0 0 |
+    // | 0 0 sz 0 |
+    // | 0 0 0 1  |
+    mat4_t m = mat4_identity();
+    m.m[0][0] = sx;
+    m.m[1][1] = sy;
+    m.m[2][2] = sz;
+    return m;
+}
+#+end_src
+*** Translation Matrix - Not Linear origin does change
+| 1 0 0 tx |   | x |
+| 0 1 0 ty | * | y |
+| 0 0 1 tz |   | z |
+| 0 0 0 1  |   | 1 |
+
+
+| x + 0 + 0 + tx |
+| 0 + y + 0 + ty |
+| 0 + 0 + z + tz |
+| 0 + 0 + 0 + 1  |
+
+| x + tx |
+| y + ty |
+| z + tz |
+|   1    |
+
+#+begin_src C
+mat4_t mat4_make_translation(float tx, float ty, float tz)
+{
+    // | 1 0 0 tx |
+    // | 0 1 0 ty |
+    // | 0 0 1 tz |
+    // | 0 0 0 1  |
+
+    mat4_t m = mat4_identity();
+    m.m[0][3] = tx;
+    m.m[1][3] = ty;
+    m.m[2][3] = tz;
+
+    return m;
+}
+#+end_src
+*** Rotation Matrix - Linear origin does not change
+
+2D Rotation Matrix
+
+|$x'$| = |cosA - sinA| * |x|
+|$y'$| = |sinA   cosA|   |y|
+
+3D Rotation Matrix
+
+Rotate in Z
+
+| cosA -sinA  0  0 |   | x |
+| sinA  cosA  0  0 | * | y |
+| 0     0     1  0 |   | z |
+| 0     0     0  1 |   | 1 |
+
+/While X and Y change Z remains unchanged/
+
+// NOTE(trist007): x and y change while z remains unchanged
+#+begin_src C
+mat4_t mat4_make_rotation_z(float angle)
+{
+    float c = cos(angle);
+    float s = sin(angle);
+
+    // c -s 0 0
+    // s  c 0 0
+    // 0  0 1 0
+    // 0  0 0 1
+
+    mat4_t m = mat4_identity();
+    m.m[0][0] = c;
+    m.m[0][1] = -s;
+    m.m[1][0] = s;
+    m.m[1][1] = c;
+
+    return m;
+}
+#+end_src
+
+Rotate in X
+
+| 1     0   0     0 |   | x |
+| 0  cosA  -sinA  0 | * | y |
+| 0  sinA   cosA  0 |   | z |
+| 0     0     0   1 |   | 1 |
+
+// NOTE(trist007): first row and column unchanged cause X remains unchanged
+
+#+begin_src C
+mat4_t mat4_make_rotation_x(float angle)
+{
+    float c = cos(angle);
+    float s = sin(angle);
+
+    // 1  0  0  0
+    // 0  c -s  0
+    // 0  s  c  0
+    // 0  0  0  1
+
+    mat4_t m = mat4_identity();
+    m.m[1][1] = c;
+    m.m[1][2] = -s;
+    m.m[2][1] = s;
+    m.m[2][2] = c;
+
+    return m;
+}
+#+end_src
+
+
+Rotate in Y
+
+| cosA   0    sinA    0  |   | x |
+| 0      1     0      0  | * | y |
+| -sinA  0     cosA   0  |   | z |
+| 0      0     0      1  |   | 1 |
+
+// NOTE(trist007): y column stays the same 0 1 0 0
+ #+begin_src C
+mat4_t mat4_make_rotation_y(float angle)
+{
+    float c = cos(angle);
+    float s = sin(angle);
+
+    //  c  0  s  0
+    //  0  1  0  0
+    // -s  0  c  0
+    //  0  0  0  1
+
+    mat4_t m = mat4_identity();
+    m.m[0][0] = c;
+    m.m[0][2] = s;
+    m.m[2][0] = -s;
+    m.m[2][2] = c;
+
+    return m;
+}
+#+end_src
+
+The above is for right-handed coordinate system
+
+For a left-handed coordinate system, the rotation matrices are the same structure as right-handed ones, but the sign of the sine terms flips relative to the RHS convention — because "positive rotation" in LHS goes clockwise when looking down the positive axis (versus counterclockwise in RHS).
+
+So left-handed coordinate system Rotation Matrices would look like this
+
+Rotate around X:
+
+| 1      0        0      |
+| 0    cos(θ)   sin(θ)   |
+| 0   -sin(θ)   cos(θ)   |
+
+Rotate around Y:
+
+| cos(θ)   0   -sin(θ) |
+|   0      1     0     |
+| sin(θ)   0    cos(θ) |
+
+Rotate around Z:
+
+| cos(θ)   sin(θ)   0 |
+| -sin(θ)  cos(θ)   0 |
+|   0        0      1 |
+*** World Matrix
+                                                       | x |
+Translation Matrix * Rotation Matrix * Scale Matrix *  | y |   = World Matrix
+                                                       | z |
+                                                       | 1 |
+
+So then you can just multiply once using the World Matrix to get the final Transform
+
+World Matrix            | x |
+                *       | y |
+                        | z |
+                        | 1 |
+
+The world matrix is the combination / multiplication of all the matrices that transform the original
+vectors and place the overall 3D Mesh in its correct place in the world/scene
+
+Shear is another Transformation it does not change origin so it is a Linear Transformation
+** Projection Matrix
+Goals for a Projection Matrix
+1. Aspect ratio: adjust x and y values based on the screen width and height
+2. Field of view: adjust x and y values based on the FOV angle 
+3. Normalization: adjust x, y, and z values to sit between -1 and 1
+4. Preserve original Z: save the original, unnormalized z (depth) somewhere after the projection
+*** Orthographic - all objects appear the same size no matter the z value
+**** Perspective - objects with a z value closer to the screen will appear closer to the screen
+
+                                    | x |
+Perspective projection matrix 4x4 * | y |  -> Perspective divide 1/z -> Depth Normalization (NDC)  -> Screen Space
+                                    | z |                               Normalized Device Coordinates 
+                                    | 1 |
+OpenGL: -1 to 1
+D3D11:   0 to 1
+Vulkan:  0 to 1
+
+Ready to be rasterized after Depth Normaliztion to Screen Space
+
+Aspect Ratio
+
+horizontal - a = w / h
+vertical   - a = h / w  (reciprocal)
+
+                                         Reciprocal (less than 1 since heights are all shorter than the width)
+     320                      
+240  4:3  -> a = 320 / 240 = 1.333       a = 240 / 320  = 0.75
+
+     1280
+800  16:10 -> a = 1280 / 800 = 1.6       a = 800 / 1280 = 0.625
+
+     1600
+900  16:9  -> a = 1600 / 900 = 1.777     a = 900 / 1600 = 0.562
+
+Transformation for Aspect Ratio Scaling Factor make width smaller so as screen gets wider a cube still looks like 1x1x1
+
+| x |    | ax |
+| y | -> | y  |
+| z |    | z  |
+
+-1                             +1
+------------------------------
+\             |             /
+ \            |            /
+  \           |           /
+   \          |          /
+    \         |         /
+     \        |        /
+      \       |       /
+       \      |      /
+        \     |     /
+         \    |    /
+          \   |   /
+           \  |  /
+            \ | /
+             \|/
+              
+             FOV
+             
+SohCahToa
+
+a = h / w
+f = 1 / tan(0/2)  // Scaling Factor
+
+Transformation
+
+| x |    | afx |
+| y | -> | fy  | -> Perspective divide x/z y/z z/z = NDC
+| z |    |  z  |

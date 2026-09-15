@@ -1,3 +1,62 @@
+* Allocators
+Bump allocation - arena / linear allocation
+#+BEGIN_SRC C
+typedef struct {
+    uint8_t *base;
+    size_t   capacity;
+    size_t   offset;
+} Arena;
+
+void *arena_alloc(Arena *a, size_t size) {
+    size = (size + 7) & ~7; // align to 8 bytes
+    if (a->offset + size > a->capacity) return NULL;
+    void *ptr = a->base + a->offset;
+    a->offset += size;
+    return ptr;
+}
+#+END_SRC
+
+Key/Slot allocation - preallocate an array of slots static storage
+#+BEGIN_SRC C
+typedef struct {
+    uint32_t index;
+    uint32_t generation;
+} Handle;
+
+typedef struct {
+    T        data[MAX_SLOTS];
+    uint32_t generation[MAX_SLOTS];
+    uint32_t free_list[MAX_SLOTS];
+    uint32_t free_count;
+} SlotMap;
+
+Handle slotmap_alloc(SlotMap *sm) {
+    uint32_t idx = sm->free_list[--sm->free_count];
+    return (Handle){ idx, sm->generation[idx] };
+}
+
+void slotmap_free(SlotMap *sm, Handle h) {
+    sm->generation[h.index]++;       // invalidates old handles
+    sm->free_list[sm->free_count++] = h.index;
+}
+#+END_SRC
+* Applications to try for C
+cscope - source code browsing tool
+emacspeak - speech interface for emacs
+jed - small emacs like programmer's editor
+p2c - translates pascal programs into C
+pan - usenet newsreader check out comp.lang.c - usenet still active in 2026
+pidgin - can be used for IRC check out #C++-general or #C on libera.chat
+poke - editor for binary data
+soma - plays somafm music
+serf - high perf C-based HTTP client lib built upon apache portable runtime
+snownews - a console RSS newsreader
+ssr - simple screen recorder for linux
+svgalib - low level graphics library
+swig - interface compiler that connects C programs with scripting languages like perl, python, ruby and tcl
+vtune - profiler
+cppcheck and clang-tidy - static analysis for C
+
 * Inbox
 ** instead of using stdbool.h for true and false best to just use int and return 0 or 1
 because stdbool.h may not be available or true and false may have conflicts so for max
