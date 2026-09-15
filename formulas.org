@@ -497,8 +497,9 @@ Goals for a Projection Matrix
 2. Field of view: adjust x and y values based on the FOV angle 
 3. Normalization: adjust x, y, and z values to sit between -1 and 1
 4. Preserve original Z: save the original, unnormalized z (depth) somewhere after the projection
+   
 *** Orthographic - all objects appear the same size no matter the z value
-**** Perspective - objects with a z value closer to the screen will appear closer to the screen
+*** Perspective - objects with a z value closer to the screen will appear closer to the screen
 
                                     | x |
 Perspective projection matrix 4x4 * | y |  -> Perspective divide 1/z -> Depth Normalization (NDC)  -> Screen Space
@@ -531,7 +532,7 @@ Transformation for Aspect Ratio Scaling Factor make width smaller so as screen g
 | y | -> | y  |
 | z |    | z  |
 
--1                             +1
+-1.                            +1
 ------------------------------
 \             |             /
  \            |            /
@@ -560,3 +561,265 @@ Transformation
 | x |    | afx |
 | y | -> | fy  | -> Perspective divide x/z y/z z/z = NDC
 | z |    |  z  |
+*** zFar and zNear
+
+zNear 0 and zFar 1 - normalized
+
+Transformation
+
+| x |    | afx     |
+| y | -> | fy      |
+| z |    | LambdaZ |
+
+
+Aspect Ratio: a = h /w
+
+Field of View: f = t / tan(0/2)
+
+lambdaS = scaling factor
+lambdaT = translation factor (offset)
+
+Perspective Projection Matrix (lambdaS and lambdaT are below)
+
+| (h/w) (1/tan(0/2))        0	     0         0       |   | X |   | Xp |      Xp / z         |
+| 0                    (1/tan(0/2))    0         0       | * | Y | = | Yp | ->   Yp / z  =  NDC |
+| 0                         0      lambdaS       lambdaT |   | Z |   | Zp |      Zp / z         |
+| 0                         0          1         0       |   | 1 |   | Wp |                     |
+                                       ^saving original unnormalized Z value in the Wp component
+
+Z Normalization is the 3rd row of ?s for the NDC phase                                  
+
+anything closer than zNear does not get rendered
+anything farther than the zFar does not get rendered
+                                       
+             zFar
+------------------------------
+\             |             /
+ \            |            /
+  \           |           /
+   \          |          /
+    \         |         /
+     \        |        /
+      \       |       /
+       \      |      /
+        \     |     /
+         \---------/  zNear   -
+          \   |   /            |
+           \  |  /             |   zNear offset/translation
+            \ | /              |
+             \|/               |
+                              -
+             FOV
+ 
+Translation = LambdaS*Z + LambdaT = Zp
+              scale(*) + offset(+)
+              
+
+After the perspective divide, we want a function f(z) such that: f(zNear) = 0 and f(zFar) = 1
+
+f(z) = lambdaS*Z + lambdaT / z
+
+lambdaS*Z = scaling factor * Z
+lambdaT = translation offset
+
+When z = zNear, f(z) = 0
+
+lambdaS*zNear + lambdaT / zNear = 0
+
+_lambdaT = - lambdaS*zNear_
+
+When z = zFar, f(z) = 1
+
+lambdaS*Z + lambdaT / zFar = 1
+
+_lambdaS*zFar + lambdaT = zFar_
+
+lambdaS*zFar - lambdaS*zNear = zFar
+
+lambdaS(zFar - zNear) = zFar
+
+_lambdaS = zFar / (zFar - zNear)_
+
+lambdaT = - (zFar / zFar - zNear)*zNear
+
+_lambdaT = -zFar * zNear / zFar - zNear_
+
+Perspective Divide becomes 
+
+Xp / Wp
+Yp / Wp
+Zp / Wp
+
+since Z = Wp(old z value)
+
+*At this point we now have NDC everything normalized between 0 and 1*
+
+Normalized Device Coordinates (NDC) aka Image Space where everything is ready to be rasterized to the screen
+
+#+begin_src C
+mat4_t mat4_make_perspective(float fov, float aspect, float znear, float zfar)
+{
+    // | (h/w)*1/tan(fov/2)           0                    0             0 |
+    // | 0                            1/tan(fov/2)         0             0 |
+    // | 0                            0             zf/(zf-zn)     (-zf*zn)/(zf-zn)  |
+    // | 0                            0                    1             0 |
+
+    mat4_t m = {{{ 0 }}};
+    m.m[0][0] = aspect * (1 / tan(fov / 2));
+    m.m[1][1] = 1 / tan(fov / 2);
+    m.m[2][2] = zfar / (zfar - znear);
+    m.m[2][3] = (-zfar * znear) / (zfar - znear);
+    m.m[3][2] = 1.0;
+
+    return m;
+}
+
+vec4_t mat4_mul_vec4_project(mat4_t mat_proj, vec4_t v)
+{
+  // multiply the projection matrix by our original vector
+  vec4_t result = mat4_mul_vec4(mat_proj, v);
+
+  // perform perspective divide with original z-value that is now stored in w
+  if (result.w != 0.0)
+  {
+    result.x /= result.w;
+    result.y /= result.w;
+    result.z /= result.w;
+  }
+  return result;
+}
+#+end_src
+
+The Z Remapping is Not Linear
+
+We just saw that we use our perspective projection matrix to normalize the depth values between 0 and 1.
+
+Most people usually expect the normalized depth to be evenly distributed across [0, 1], but it is not. Because of the /z perspective divide, the mapping is hyperbolic. This means precision is concentrated near znear and gets coarser as you approach zfar.
+
+Let's look at an example. Let's say that we have 50 different points and we want to project them. The first point z coordinate starts at 10.0, and each new point's depth increases by 5 units.
+
+
+
+If we plot the depth of these original 3D points, we get evenly-spaced z values for all 50 vertices.
+
+
+
+Now, if we proceed to multiply our vertices by the projection matrix and perform the perspective divide, we should have all our points normalized (in NDC).
+
+
+
+If we plot the normalized z values of our projected NDC vertices, we get a non-linear distribution.
+
+
+
+This non-linearity is an inherent property of the perspective projection, and it is also why choosing a znear that is too small (e.g. 0.001) is dangerous, as it compresses almost all your depth precision into a tiny region near the camera, causing z-fighting on distant geometry.
+
+Z-fighting is a visual glitch in 3D computer graphics where two overlapping surfaces rapidly flicker, blend, or tear because they share the "same" distance from the camera. In our case, the values are not the same in theory, but the lack of numerical precision results in adjacent samples receiving identical depth values after projection onto the screen, despite having distinct z-coordinates in world space.
+
+
+
+The issue of z-fighting is not really a problem for us right now, but I just wanted everyone to leave this lecture knowing that the normalization of our depth values is not linear.
+
+
+Example of flicker caused by z-fighting
+
+We might also experience z-fighting when the [znear:zfar] range is excessively large, which is why many programmers suggest keeping this interval as tight as possible to mitigate depth precision issues.
+
+This non-linear nature of the normalized depth values might also helps us understand how we achieve the correct remapping in the first place. Remember how we used one multiplication (scaling term) and one subtraction (translation term) to map our depth coordinate to [0:1]?
+
+
+
+Imagine the depth values as a rubber ruler. Let’s say that, initially, our depth extends from 0.1 to 100.
+
+
+
+As we know, the projection does not stretch this ruler uniformly. Instead, it compresses it much more as you move farther away (because objects far away don't need as much precision for visibility testing).
+
+The translation term is the one creating this varying compression, through the later division by z.
+
+
+
+And the scaling term then shifts the whole curve, so that the compressed near endpoint lands exactly at 0, and the compressed far endpoint lands exactly at 1.
+
+
+
+These z entries of the projection matrix work together to shape our depth curve. The translation term creates the non-linear distribution that concentrates precision near the viewer, while the scaling term offsets that curve so it passes exactly through the desired endpoints (0 at the near plane and 1 at the far plane).
+
+Wait a minute! “Gustavo, are you telling me that the λs entry from our matrix is the one actually responsible for offsetting the depth values, and the λt is the one actually scaling them?”
+
+That’s right! And the reason for that is because we must remember that we always divide the projected values by z in the perspective divide stage. This division effectively cancels out the z's from the first term and leaves us with a 1/z (hyperbolic) in the second one.
+
+
+
+Therefore, after the perspective divide, we end up with a constant term (that shifts/offsets the values after the divide) and a 1/z term (that scales/compresses our values after the divide).
+
+I know a lot of great graphics programmers that either never understood this normalization process, or still get very confused about how the normalization happens. I hope these past few lectures helped you create some good intuition on how this depth normalization is really achieved.
+
+And before we continue, I just want to also mention that this idea of creating a projection matrix is something very common in popular modern graphics APIs, like OpenGL and Direct3D.
+
+For example, Direct3D has a function called D3DXMatrixPerspectiveFovLH() that receives as parameters the field of view, the aspect ratio, and the values of znear and zfar. You can read about this function in Microsoft’s DirectX official documentation here. As you probably noticed, this function is very similar to our mat4_make_perspective().
+
+OpenGL also has a function to create its perspective projection matrix. The function is called glFrustum() and this function behaves a bit different than ours since OpenGL's idea of a perspective projection matrix contains some different assumptions about how znear and zfar works and also accounting for OpenGL's right-handed coordinate system. Remember how we spoke that OpenGL normalizes the depth values to sit inside the interval [-1,+1] instead of [0,1]?
+
+As far as the programmer is concerned, these Direct3D and OpenGL functions can be used as black boxes. You can simply pass the correct parameters and the graphics API will handle all the internals of the projection matrix for you. That being said, it is super important that we understand that the projection matrix that we are using is different than these projection matrices used by old fixed-function OpenGL or Direct3D. It's important to mention this because some online resources that you'll find out there will explain how to derive OpenGL's perspective projection matrix and they will end up with different formulas and different matrix entries than what we used. Every graphics API can use a different approach and these different assumptions have a direct impact on how we populate the entries of our projection matrix.
+
+Still, it feels good to know how the matrix sausage is made. 🙂
+*** Row Major vs Column Major
+
+Column Major is |x| Post Multiply
+                |y|
+                |z|
+                |w|
+
+Row Major is 
+[x y z w] Pre Multiply
+
+Number of Columns on the Left matrix had to be equal to the Number of Rows on the Right matrix in
+order to do Matrix Multiplication
+
+| OpenGL  | column major |
+| Vulkan  | column major |
+| Blender | column major |
+| D3D11   | row major    |
+
+Column Major
+     m          v
+| m m m m |   | x |   |$x'$|
+| m m m m | * | y | = |$y'$| Post Multiply vector is on right
+| m m m m |   | z |   |$z'$|
+| m m m m |   | w |   |$w'$|
+  4x4          4x1     4x1
+
+Row Major
+     v            m
+              [ m m m m ]
+[ x y z w ] * [ m m m m ] Pre Multiply vector is on left
+              [ m m m m ]  = [ $x'$ $y'$ $z'$ $w'$ ]
+              [ m m m m ]
+   1x4            4x4
+
+Order of Multiplication for Row-major & Column-Major
+
+Order of Matrix Multiplication for Row-major & Column-major
+
+Transformations applied to a point or a vector using row-major can be written in sequential order (or reading order). Imagine for instance that you want to first rotate point P around the y-axis, then rotate P again around the z-axis, and finally translate point P using matrix T. In a row-major order we can write:
+
+P' = P * Ry * Rz * T
+
+Now, when using a column-major notation (the one I use in the slides of the course), we would need to call the transforms in the reverse order (which some people find counter-intuitive):
+
+P' = T * Rz * Ry * P
+
+Some people may think there must be a reason to prefer one system to another. Both conventions are correct and give us the same result, but for technical reasons, most mathematics and physics books generally treat vectors as column vectors.
+
+Order of transformation when we use column-major matrices is more similar in mathematics to the way we write function evaluation and composition.
+
+As a summary, if we want to:
+
+First Rotate around the y-axis
+Then Rotate around the z-axis
+Then Translate using matrix T
+We will have to perform the following order of multiplications:
+
+In row-major: P' = P * Ry * Rz * T
+In column-major: P' = T * Rz * Ry * P

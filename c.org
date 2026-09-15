@@ -1,3 +1,31 @@
+* Keywords
+
+** NODISCARD
+C23 feature
+[[nodiscard\]] in double braces in function declaration compiler will check that the return value is being assigned
+bool try_login()
+
+GCC/Clang extension:
+
+#define NODISCARD __attribute__((warn_unused_result))
+
+NODISCARD int compute(int x) {
+    return x * 2;
+}
+MSVC equivalent:
+
+#define NODISCARD _Check_return_
+
+#if __STDC_VERSION__ >= 202311L
+    #define NODISCARD [[nodiscard]]
+#elif defined(__GNUC__) || defined(__clang__)
+    #define NODISCARD __attribute__((warn_unused_result))
+#elif defined(_MSC_VER)
+    #define NODISCARD _Check_return_
+#else
+    #define NODISCARD
+#endif
+
 * Allocators
 Bump allocation - arena / linear allocation
 #+BEGIN_SRC C
