@@ -1,3 +1,23 @@
+** Memory Safety and compiler parameters to address
+def no {
+        Uninitialized-reads,  -Wunitialized, -ftrivial-auto-var-init=zero (clang) -fsanitize=memory(clang)
+        use-after-free, -fsanitize=address -fsanitize-address-use-after-scope
+        out-of-bounds access, add bounds check on memcpy, strcpy, sprintf when buffer sizes are known
+                              at compile time -fsanitize=bounds, f-sanitize=array-bounds
+        }
+undefined behavior, -fsanitize=undefined
+* Standard Lib
+Most of it sucks due to no bounds checking but these are worth using
+
+- malloc realloc free calloc (see "Initialization in C", for more details on calloc)
+
+- memset memcpy memmove
+
+- exit abort
+
+- assert
+
+- Math functions.
 * Keywords
 
 ** NODISCARD
@@ -398,16 +418,6 @@ If:
   PathMatch: .*\.(cpp|cc|cxx|hpp)$
 CompileFlags:
   Add: /TP
-** C++ Smart Pointers
-#+BEGIN_SRC C
-std::unique_ptr<Entity> entity = std::make_unique<Entity>();
-std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-#+END_SRC
-unique_ptr - will be free when out of scope
-shared_ptr - has a reference count and increments it and keeps track, once reference count is 0 it will free it 
-weak_ptr - does not add to the reference count
-
-don't need to call new or delete with these smart pointers
 [2026-09-03 Thu 11:58]
 [[file:c:/dev/cielo/.clangd::Compiler: cl]]
 ** To see if an int is a power of two you can compare bit represenation to see if any of the columns

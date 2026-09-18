@@ -1,0 +1,89 @@
+* Inbox
+** ** C++ Smart Pointers
+#+BEGIN_SRC C
+std::unique_ptr<Entity> entity = std::make_unique<Entity>();
+std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+#+END_SRC
+unique_ptr - will be free when out of scope
+shared_ptr - has a reference count and increments it and keeps track, once reference count is 0 it will free it 
+weak_ptr - does not add to the reference count
+
+don't need to call new or delete with these smart pointers
+
+** Types of Casts
+
+static_cast<T>(expr)
+
+The general-purpose cast for well-defined conversions: numeric type conversions (int ↔ float), pointer conversions within an inheritance hierarchy (upcasting/downcasting, though downcasting isn't checked), converting void* back to a typed pointer, and calling explicit constructors/conversion operators. Checked at compile time.
+#+begin_src c++
+double d = 3.14;
+int i = static_cast<int>(d);
+#+end_src
+
+dynamic_cast<T>(expr)
+
+Used for safe downcasting in polymorphic class hierarchies (classes with virtual functions). It checks type validity at runtime using RTTI (Run-Time Type Information). Returns nullptr if the cast fails (for pointers), or throws std::bad_cast (for references).
+#+begin_src c++
+Base* b = new Derived();
+Derived* d = dynamic_cast<Derived*>(b); // nullptr if b isn't actually a Derived
+#+end_src
+
+const_cast<T>(expr)
+
+Adds or removes const (or volatile) qualifiers. It's the only cast that can do this. Commonly used when interfacing with APIs that aren't const-correc
+#+begin_src c++
+void legacyFunc(char* s);
+const char* str = "hello";
+legacyFunc(const_cast<char*>(str)); // only safe if legacyFunc doesn't modify it
+#+end_src
+
+reinterpret_cast<T>(expr)
+
+The most dangerous one — reinterprets the bit pattern of one type as another, with essentially no safety checks. Used for low-level conversions like pointer-to-integer, unrelated pointer types, or function pointer conversions. Highly implementation-defined behavior.
+#+begin_src c++
+int* p = new int(65);
+char* c = reinterpret_cast<char*>(p);
+#+end_src
+
+|------------------+----------------------------------+-----------------------|
+| Cast             | Purpose                          | Safety                |
+|------------------+----------------------------------+-----------------------|
+| static_cast      | Related/well-defined conversions | Compile-time checked  |
+| dynamic_cast     | Safe polymorphic downcasting     | Runtime checked       |
+| const_cast       | Add/remove const/volatile        | No type check         |
+| reinterpret_cast | Low-level bit reinterpretation   | Essentially unchecked |
+
+[2026-09-16 Wed 11:15]
+[[file:c:/dev/org/gamedev/c.org::*Call back function example][Call back function example]]
+
+** The Four Different Categories of Exceptions
+
+C++'s standard exception hierarchy (all deriving from std::exception, in <stdexcept> and elsewhere) is usually broken into four groups:
+
+1. Logic errors — std::logic_error and its subclasses, representing errors that are theoretically detectable before the program runs (bad arguments, bad state).
+
+std::invalid_argument
+std::domain_error
+std::length_error
+std::out_of_range
+
+2. Runtime errors — std::runtime_error and its subclasses, representing errors that can only be detected while the program is running.
+
+std::range_error
+std::overflow_error
+std::underflow_error
+std::system_error (often includes an std::error_code)
+
+3. Language-support errors — exceptions thrown by core language mechanisms rather than user code.
+
+std::bad_alloc (thrown by new on allocation failure)
+std::bad_cast (thrown by dynamic_cast on a bad reference cast)
+std::bad_typeid
+std::bad_exception
+
+4. Other/custom exceptions — anything else, including:
+
+Exceptions thrown by other standard library facilities (e.g. std::regex_error, std::filesystem::filesystem_error, std::ios_base::failure)
+User-defined exception classes, typically derived from std::exception or one of the above, by overriding what()
+
+A quick mental model: std::exception is the root; logic_error and runtime_error are the two main "user-code-facing" branches; the rest (bad_alloc, bad_cast, etc.) are thrown by the language/runtime itself rather than being something you'd typically throw yourself.

@@ -806,7 +806,7 @@ Transformations applied to a point or a vector using row-major can be written in
 
 P' = P * Ry * Rz * T
 
-Now, when using a column-major notation (the one I use in the slides of the course), we would need to call the transforms in the reverse order (which some people find counter-intuitive):
+Now, when using a column-major notation (the one I use in the slides of the course), we would need to call the transforms in the /reverse/ order (which some people find counter-intuitive):
 
 P' = T * Rz * Ry * P
 
@@ -823,3 +823,49 @@ We will have to perform the following order of multiplications:
 
 In row-major: P' = P * Ry * Rz * T
 In column-major: P' = T * Rz * Ry * P
+* Lighting
+** Flat Shading - simple algorithm per triangle
+Have a light with a light direction.  Then analyze how aligned(DOT Product) the light ray is with the face normal - bright or darker.
+
+90% aligned - 90% white
+80% aligned - 80% white
+60% aligned - 60% white
+
+Dot Product gives 1.0 to 0.0 and even -1.0, 1.0 being fully aligned 0.0 at 90 and -1.0 at 180 degrees
+
+#+begin_src C
+uint32_t light_apply_intensity(uint32_t original_color, float percentage_factor)
+{
+  uint32_t a = (original_color & 0xFF000000);
+  uint32_t r = (original_color & 0x00FF0000) * percentage_factor;
+  uint32_t g = (original_color & 0x0000FF00) * percentage_factor;
+  uint32_t b = (original_color & 0x000000FF) * percentage_factor;
+
+  uint32_t new_color = a | (r & 0x00FF0000) | (g & 0x0000FF00) | (b & 0x000000FF);
+
+  return new_color;
+}
+#+end_src
+** Smooth Shading - per pixel more serio what is used in the game industry but requires more jugo
+Gouraud Shading - a type of smooth shading computes the color of each vertex and then interpolates the values per pixel from
+a vertex to another
+** Phong Shading - modern very detailed reflection model requires the most jugo
+Ambient light + Diffuse light + Specular ligth = Phong
+* Texture Mapping - pixel from texture goes to pixel on mesh, texel instead of pixel
+UV Coordinate System - Normalized values from 0 to 1.
+
+(0,1)        (1,1)
+    -----------
+    |         |
+    |         | 
+    |         |
+     ---------
+(0,0)         (1,0)
+
+U - horizontal
+V - vertical
+
+Always going to map values of width and height between 0 and 1
+Say I wanted to get the middle texel (0.5, 0.5)
+Our Object will bring per vertex information of the UV coords that it's going to map to our original map
+To use textures we need UV coordindates for each vertex
