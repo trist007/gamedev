@@ -1,105 +1,107 @@
 * Inbox
 [2026-08-12 Wed 20:45]
-Wing Gameplay TODOs [5/88] [5%]
-  - [ ] work on the d3d11 side to replace IMGUI with microUI
-  - [ ] work on the linux / x11 side of removing SDL and IMGUI and implementing microUI
-  - [ ] rudder
-  - [ ] flaps
-  - [ ] scale (may not be necessary)
-  - [X] even out gear and bay
-  - [ ] random world generator
-  - [ ] cave glb
-  - [X] usaf logo remove and make the area dirty like surrounding
-  - [ ] retro boosters to majorly slow you down
-  - [ ] in flyby camera mode have different wind flyby noise based on how fast you are flying by
-  - [ ] airbrake
-  - [ ] add booleans in renderers to see which pipelines will be used (not needed yet)
-    so that not all will have memory buffers allocated
-  - [X] clean up vulkan init
-  - [ ] add pipelines to renderers to drawCircle
-  - [ ] vulkan renderer drawline should have its own buffers not sharing with 3d pipeline
-    
-  - [ ] implement fortune-cookie for random quote on doom emacs dashboard
-  - [ ] use microui for logging in game in a gui window as you play
-  - [ ] replaced HandmadeMath with cglm
-  - [ ] write a PNG parser
-  - [ ] include a getVersion function for both sitcha and platano for debugging so we know which version had the bug
-        if (Version != SITCHA_VERSION) stderr
-  - [ ] run pvs-studio, pc-lint(visual studio), cpp-check, clang-tidy and cl.exe /analyze for static analysis
-  - [ ] look into shadow maps to start implementing shadow maps easier to land if you can see your shadow
-  - [X] cloc for checking lines of code
-  - [ ] finish build-tcc for quicker iteration as raddbg will eventually support dwarf debug
-  - [ ] add wayland support to platano
-  - [X] microui to replace cimgui
-  - [ ] snapshot to reload state snapshot of volative ram into save.bin
-  - [ ] Software Rendering for portability
-  - [ ] OS Platform layer for portability
-  - [ ] portability - chars at least 8 bits, int at least 16 bits, shorts have to be 16 bits, longs 32 bits
-        no limits.h
-  - [ ] C89 for portability
-  - [ ] apply mesh optimizer to renderers
-  - [ ] loud impactful noise when getting hit like lhx arcade
-  - [ ] need drawCircle to outline avionics so new pipeline in the renderers
-  - [ ] tighten collision to wheel offsets so plane movement is dynamic
-  - [ ] screen for plane upgrades
-  - [ ] put chickens in the game make golden chicks special
-  - [ ] have arwin appear randomly in the game like in cave corners
-  - [ ] minimap
-  - [ ] double propeller upgrade
-  - [ ] heavy landing gear upgrade to handle tough landings
-  - [ ] runway on a mountain that has a gradient like air america  
-  - [ ] mini us map
-  - [ ] stay puft giant boss
-  - [ ] some caves are dark need headlight upgrade
-  - [ ] have heavy climb where player needs powerful engine to progress
-  - [ ] wind sound
-  - [ ] sound changes when entering cave
-  - [ ] flaps
-  - [ ] airbrake
-  - [ ] fire torches on sides of walls with noise loud enough to hear surround
-  - [ ] break plane into pieces each with glb to pop off if damaged
-  - [ ] Wheel noise while on ground
-  - [ ] level with portal to another dimension
-  - [ ] Title Screen
-  - [ ] Map level screen
-  - [ ] Desk scene
-  - [ ] Bar scene
-  - [ ] Tuttles scene
-  - [ ] Rocket pack
-  - [ ] popcorn noise and confetti upon goal completion with plane leaving formation with cool sound
-  - [ ] fireworks and confetti for completion screen and bonus if complete level early
-  - [ ] secret coins found in hard to get places
-  - [ ] maybe find ufo pieces scattered through the world or of a some sick plane/jet
-  - [ ] helicopter
-  - [ ] mini us
-  - [ ] defeat giant monster
-  - [ ] inside volcano level
-  - [ ] library of alexandria level in europe or atlantis
-  - [ ] inner earth level
-  - [ ] hangar to select plane
-  - [ ] weather system with wind and us flag pole near airport
-  - [ ] area 51 level
-  - [ ] find nessie level
-  - [ ] bermuda triangle level green fog
-  - [ ] contrails on wingtips if high gs
-  - [ ] flyby camera view with dopper effect
-  - [ ] grand canyon level with ancient egyptian ruins underneath
-  - [ ] mysterious island west of ireland that only appears at a certain time
-  - [ ] maybe 3rd person gameplay to go in chamber and collect ancient artifact like indiana jones
-  - [ ] spirit of adventure 1930s howard hughes
-  - [ ] feeling of progression in terms of aerodynamic performance
-  - [ ] blowing up building gente flying
-  - [ ] have a bag to put nodes in so you can use them else where on the map
-  - [ ] implement procedural world building
-  - [ ] sound effects for placement and deletion of nodes
-  - [ ] maybe some momentum and options menu in editor
-  - [ ] replace stb_truetype and stb_image with slug($1500) does not work with cimgui, but will look nice
-  - [ ] use memcpy if memory does not overlap, use memmove if memory overlaps
-  - [ ] what are light maps
-  - [ ] finish off control surfaces
-  - [ ] implement avionics
-  - [ ] implement flyby camera
-  - [ ] finish off landing gear shocks
-  - [ ] souls like notification system, when player is poisoned/healed
-  - [ ] shader for health bar and throttle
-  - [ ] start creating levels with Piso
+Wing Gameplay TODOs [5/100] [5%]
+- [ ] work on the d3d11 side to replace IMGUI with microUI
+- [ ] work on the linux / x11 side of removing SDL and IMGUI and implementing microUI
+- [ ] rudder
+- [ ] flaps
+- [ ] scale (may not be necessary)
+- [X] even out gear and bay
+- [ ] random world generator
+- [ ] cave glb
+- [X] usaf logo remove and make the area dirty like surrounding
+- [ ] retro boosters to majorly slow you down
+- [ ] in flyby camera mode have different wind flyby noise based on how fast you are flying by
+- [ ] airbrake
+- [ ] add booleans in renderers to see which pipelines will be used (not needed yet)
+  so that not all will have memory buffers allocated
+- [X] clean up vulkan init
+- [ ] add pipelines to renderers to drawCircle
+- [ ] vulkan renderer drawline should have its own buffers not sharing with 3d pipeline
+
+- [ ] implement fortune-cookie for random quote on doom emacs dashboard
+- [ ] sound effects for a hint of triumph like indy infernal machine
+- [ ] explosive barrels that can be shot to explode and open new areas
+- [ ] use microui for logging in game in a gui window as you play
+- [ ] replaced HandmadeMath with cglm
+- [ ] write a PNG parser
+- [ ] include a getVersion function for both sitcha and platano for debugging so we know which version had the bug
+      if (Version != SITCHA_VERSION) stderr
+- [ ] run pvs-studio, pc-lint(visual studio), cpp-check, clang-tidy and cl.exe /analyze for static analysis
+- [ ] look into shadow maps to start implementing shadow maps easier to land if you can see your shadow
+- [X] cloc for checking lines of code
+- [ ] finish build-tcc for quicker iteration as raddbg will eventually support dwarf debug
+- [ ] add wayland support to platano
+- [X] microui to replace cimgui
+- [ ] snapshot to reload state snapshot of volative ram into save.bin
+- [ ] Software Rendering for portability
+- [ ] OS Platform layer for portability
+- [ ] portability - chars at least 8 bits, int at least 16 bits, shorts have to be 16 bits, longs 32 bits
+      no limits.h
+- [ ] C89 for portability
+- [ ] apply mesh optimizer to renderers
+- [ ] loud impactful noise when getting hit like lhx arcade
+- [ ] need drawCircle to outline avionics so new pipeline in the renderers
+- [ ] tighten collision to wheel offsets so plane movement is dynamic
+- [ ] screen for plane upgrades
+- [ ] put chickens in the game make golden chicks special
+- [ ] have arwin appear randomly in the game like in cave corners
+- [ ] minimap
+- [ ] double propeller upgrade
+- [ ] heavy landing gear upgrade to handle tough landings
+- [ ] runway on a mountain that has a gradient like air america  
+- [ ] mini us map
+- [ ] stay puft giant boss
+- [ ] some caves are dark need headlight upgrade
+- [ ] have heavy climb where player needs powerful engine to progress
+- [ ] wind sound
+- [ ] sound changes when entering cave
+- [ ] flaps
+- [ ] airbrake
+- [ ] fire torches on sides of walls with noise loud enough to hear surround
+- [ ] break plane into pieces each with glb to pop off if damaged
+- [ ] Wheel noise while on ground
+- [ ] level with portal to another dimension
+- [ ] Title Screen
+- [ ] Map level screen
+- [ ] Desk scene
+- [ ] Bar scene
+- [ ] Tuttles scene
+- [ ] Rocket pack
+- [ ] popcorn noise and confetti upon goal completion with plane leaving formation with cool sound
+- [ ] fireworks and confetti for completion screen and bonus if complete level early
+- [ ] secret coins found in hard to get places
+- [ ] maybe find ufo pieces scattered through the world or of a some sick plane/jet
+- [ ] helicopter
+- [ ] mini us
+- [ ] defeat giant monster
+- [ ] inside volcano level
+- [ ] library of alexandria level in europe or atlantis
+- [ ] inner earth level
+- [ ] hangar to select plane
+- [ ] weather system with wind and us flag pole near airport
+- [ ] area 51 level
+- [ ] find nessie level
+- [ ] bermuda triangle level green fog
+- [ ] contrails on wingtips if high gs
+- [ ] flyby camera view with dopper effect
+- [ ] grand canyon level with ancient egyptian ruins underneath
+- [ ] mysterious island west of ireland that only appears at a certain time
+- [ ] maybe 3rd person gameplay to go in chamber and collect ancient artifact like indiana jones
+- [ ] spirit of adventure 1930s howard hughes
+- [ ] feeling of progression in terms of aerodynamic performance
+- [ ] blowing up building gente flying
+- [ ] have a bag to put nodes in so you can use them else where on the map
+- [ ] implement procedural world building
+- [ ] sound effects for placement and deletion of nodes
+- [ ] maybe some momentum and options menu in editor
+- [ ] replace stb_truetype and stb_image with slug($1500) does not work with cimgui, but will look nice
+- [ ] use memcpy if memory does not overlap, use memmove if memory overlaps
+- [ ] what are light maps
+- [ ] finish off control surfaces
+- [ ] implement avionics
+- [ ] implement flyby camera
+- [ ] finish off landing gear shocks
+- [ ] souls like notification system, when player is poisoned/healed
+- [ ] shader for health bar and throttle
+- [ ] start creating levels with Piso

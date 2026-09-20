@@ -6,6 +6,12 @@ def no {
                               at compile time -fsanitize=bounds, f-sanitize=array-bounds
         }
 undefined behavior, -fsanitize=undefined
+
+GCC/Clang -ftrivial-auto-var-init=pattern + MSVC's /RTC1 eliminates ~10% of vulnerabilities by removing attacker read/write of stack values
+
+C23 introduces constexpr which partially prevents Undefined Behavior
+
+Don't leave Address Sanitizer, asserts, or -NDEBUG in production, they are ONLY for development
 * Standard Lib
 Most of it sucks due to no bounds checking but these are worth using
 
