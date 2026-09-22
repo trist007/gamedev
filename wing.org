@@ -20,7 +20,7 @@ Wing Gameplay TODOs [5/100] [5%]
 - [ ] vulkan renderer drawline should have its own buffers not sharing with 3d pipeline
 
 - [ ] implement fortune-cookie for random quote on doom emacs dashboard
-- [ ] sound effects for a hint of triumph like indy infernal machine
+- [ ] sound effects for a hint of triumph or a hint of defeat like indy infernal machine
 - [ ] explosive barrels that can be shot to explode and open new areas
 - [ ] use microui for logging in game in a gui window as you play
 - [ ] replaced HandmadeMath with cglm

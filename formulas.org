@@ -857,7 +857,7 @@ UV Coordinate System - Normalized values from 0 to 1.
 (0,1)        (1,1)
     -----------
     |         |
-    |         | 
+    |         |
     |         |
      ---------
 (0,0)         (1,0)
@@ -869,3 +869,136 @@ Always going to map values of width and height between 0 and 1
 Say I wanted to get the middle texel (0.5, 0.5)
 Our Object will bring per vertex information of the UV coords that it's going to map to our original map
 To use textures we need UV coordindates for each vertex
+** Barycentric coordinates (area coordinates)
+Consider a triangle T defined by three vertices ABC and a point P somewhere inside the triangle
+
+*P = (a, B, y)*
+
+alpha, beta, gamma
+
+alpha + beta + gamma will always equal to 1 (100%)
+
+*a + B + y = 1*
+
+P = aA + BB + yC
+
+/think of each of the 3 as a piece of area within the triangle like subtriangles/
+
+a = area_triangle(PBC) / area_triangle(ABC)
+
+a = (area_parallelogram(PBEC) / 2) / (area_parallelogram(ABDC) / 2)
+
+a = area_parallelogram(PBEC) / area_parallelogram(ABDC)
+
+*a = || PC x PB || / || AC x AB ||*
+
+B = area_triangle(APC) / area_triangle(ABC)
+
+B = (area_parallelogram(APEC) / 2) / (area_parallelogram(ABDC) / 2)
+
+B = area_parallelogram(APEC) / area_parallelogram(ABDC)
+
+*B = || AC x AP || / || AC x AB ||*
+
+y = area_triangle(CPA) / area_triangle(ABC)
+
+or
+
+*y = 1 - a - B*
+
+#+begin_src C
+vec3_t barycentric_weights(vec2_t a, vec2_t b, vec2_t c, vec2_t p)
+{
+  // Find the vectors between the vertices ABC and point p
+  vec2_t ac = vec2_sub(c, a);
+  vec2_t ab = vec2_sub(b, a);
+  vec2_t pc = vec2_sub(c, p);
+  vec2_t pb = vec2_sub(b, p);
+  vec2_t ap = vec2_sub(p, a);
+  
+  // NOTE(trist007): 2D cross product, area of the full parallelogram-ABC
+  float area_parallelogram_abc = (ac.x * ab.y - ac.y * ab.x);  // || AC x AB ||
+
+  // Alpha = area of parallelogram-PBC over the area of the full parallelogram-ABC
+  float alpha = (pc.x * pb.y - pc.y * pb.x) / area_parallelogram_abc;
+
+  // Beta = area of parallelogram-APC over the area of the full parallelogram-ABC
+  float beta = (ac.x * ap.y - ac.y * ap.x) / area_parallelogram_abc;
+
+  // Gamma can be easily found since barycentric coordinates always add up to 1.0
+  float gamma = 1.0 - alpha - beta;
+
+  vec3_t weights = { alpha, beta, gamma };
+
+  return weights;
+}
+#+end_src
+*** Perspective Correctness
+A texture mapped cube shows distortion when rotating like a brick texture
+The mapping of the texels are linear map between original texture to the triangle face without taking into account
+the perspective or how far/closer we are to the camera because we are using Perspective Projection.
+
+Issue: The pulling effect is that one of the barycentric weights is a lot stronger than the others
+Notice that the barycentric_weights() only used x and y not z it did not take depth into account.  We cannot
+solve for z like we did for x and y because *Perspective is a non-linear transform!*
+
+So to fix we need Perspective Divide (1 / z)?  Or perhaps find the depth at point_p?
+
+Xp = projected X
+
+Xp = X / Z
+
+original X = XpZ
+
+to find x in terms of z with a linear equation then: x = mz + c
+m = slope
+c = constant
+
+XpZ = mZ + C
+
+XpZ - mZ = C
+
+Z(Xp - m) = C
+
+Z = C / Xp - m  (Because Xp is in denominator that means it is *not linear*)
+
+Let's try reciprocal of Z
+
+1 / Z = Xp - m / C
+
+1 / Z = (1/C)Xp - (m/C) 
+1/C and m/C are just constants so *reciprocal of Z is linear*
+
+*After our perspective projection is applied, we cannot return back to the value of z using a simple linear equation*
+*We cannot interpolate Z directly, since the value of Z is not linear across the triangle but the reciprocal of 1/Z is linear*
+*so we can use 1/Z to find the interpolated z at point P*
+
+1. Remember that we stored the original value of Z in W so we do 1/w
+2. Then we interpolate over the triangle face (using barycentric weights, 1/w factor)
+3. Finally, we divide all the attributes by 1/w(undoes the perspective transform)
+
+   *PS1 games could not fix Perspective Projection distortion because it required 1/w division per pixel* which is horrible performance on older
+   consoles like a PS1 so they left it alone.  PS1 did not have a Floating Point Unit FPU so could not perform floaing point operations. Games like spiderman and 007 driving you can see this distortion of one of the barycentric weights pulling harder.  The GPU did not even receive the depth
+   information at rasterization time, so it would not be even able to fix this perspective correction.  PS1 did not have a depth buffer.
+   
+Perspective Correct Interpolation
+
+#+begin_src C
+  // Variables to store the interpolated values of U, V, and also 1/W for the current pixel
+  float interpolated_u;
+  float interpolated_v;
+  float interpolated_reciprocal_w;
+
+  // Perform the interpolation of all U/W and V/W values using barycentric weights and a factor of 1/W
+  interpolated_u = (a_uv.u / point_a.w * alpha) + (b_uv.u / point_b.w * beta) + (c_uv.u / point_c.w * gamma);
+  interpolated_v = (a_uv.v / point_a.w * alpha) + (b_uv.v / point_b.w * beta) + (c_uv.v / point_c.w * gamma);
+
+  // Also interpolate the value of 1/W for the current pixel
+  interpolated_reciprocal_w = (1 / point_a.w) *  alpha + (1 / point_b.w) * beta + (1 / point_c.w) * gamma;
+
+  // Now we can divide back both interpolated values by that interpolated reciprocal
+  interpolated_u /= interpolated_reciprocal_w;
+  interpolated_v /= interpolated_reciprocal_w;
+#+end_src
+
+"If X is the point set of an affine space, then every affine transformation on X can be represented as the composition of a linear transformation on X and a translation of X. Unlike a purely linear transformation, an affine transformation need not preserve the origin. Thus, every linear transformation is affine, but not every affine transformation is linear. An affine transformation carries straight lines into straight lines and parallel lines into parallel lines but may alter the distance between points and angles between lines. Examples of affine transformations include translation, scaling, similarity, reflection, rotation, shear, and compositions of them in any combination and sequence.”
