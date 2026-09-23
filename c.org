@@ -1,3 +1,6 @@
+* dumpbin
+to see which DLLs are needed by an exe
+dumpbin /DEPENDENTS glslViewer.exe
 ** Memory Safety and compiler parameters to address
 def no {
         Uninitialized-reads,  -Wunitialized, -ftrivial-auto-var-init=zero (clang) -fsanitize=memory(clang)
