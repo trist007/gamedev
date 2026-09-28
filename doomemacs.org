@@ -1,3 +1,7 @@
+* List colors
+M-x list-colors-display
+* Check the face of the character
+M-x describe-char
 * Features
 ** Multi-Cursor
 Once on the match hit gzm and multiple cursors will appear on all the matches

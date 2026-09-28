@@ -1,0 +1,71 @@
+* rcs
+Create RCS directory within project directory
+check in = ci -u blit.c
+check out = co -l blit.c // check out with lock
+edit file then check in to unlock = ci -u blit.c // to unlock
+
+check log = rlog blit.c
+quick summary = rlog -h blit.c
+
+viewing an old revision
+co -p -r1.3 blit.c > old_version.c
+
+diffing revisions
+rcsdiff -r1.2 -r1.3 blit.c
+or against working copy
+rcsdiff blit.c
+
+* Inbox
+** Wordstar Keybinds
+Cursor movement
+
+Ctrl+S — cursor left
+Ctrl+D — cursor right
+Ctrl+E — cursor up
+Ctrl+X — cursor down
+Ctrl+A — word left
+Ctrl+F — word right
+Ctrl+W — scroll up (view, cursor stays)
+Ctrl+Z — scroll down (view, cursor stays)
+
+Line/screen jumps
+
+Ctrl+Q S — start of line
+Ctrl+Q D — end of line
+Ctrl+Q R — top of file
+Ctrl+Q C — end of file
+Ctrl+Q E — top of screen
+Ctrl+Q X — bottom of screen
+Ctrl+Q B — start of marked block
+Ctrl+Q K — end of marked block
+
+Editing
+
+Ctrl+G — delete character under cursor
+Ctrl+H (or Backspace) — delete char left
+Ctrl+T — delete word right
+Ctrl+Y — delete entire line
+Ctrl+Q Y — delete to end of line
+Ctrl+N — insert line
+Ctrl+V — toggle insert/overwrite mode
+
+Blocks
+
+Ctrl+K B — mark block begin
+Ctrl+K K — mark block end
+Ctrl+K C — copy block
+Ctrl+K V — move block
+Ctrl+K Y — delete block
+Ctrl+K W — write block to file
+Ctrl+K R — read block from file
+
+Find/replace
+
+Ctrl+Q F — find
+Ctrl+Q A — find and replace
+Ctrl+L — repeat last find
+
+One thing worth knowing: the IDE has a settings toggle (Options → Environment → Editor) where you can switch from WordStar-style bindings to a more conventional/CUA-style scheme (arrow keys, Shift+arrows to select, etc.) if the diamond-key layout doesn't stick with you. A lot of people keep WordStar just for Ctrl+K B/Ctrl+K K block marking since it's fast once memorized, even if they map the rest to arrow keys.
+
+[2026-09-25 Fri 14:26]
+[[file:c:/dev/dosdev/blittoscreen.c::union REGS regs;]]

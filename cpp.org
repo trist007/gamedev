@@ -1,3 +1,14 @@
+* References (C++ only)
+#+begin_src C++
+void function(int &x1)
+{
+    x1 = 100;   // no * needed — writes directly to caller's variable
+}
+
+int x = 5;
+function(x);    // no & needed at call site either
+// x is now 100
+#+end_src
 * Inbox
 ** ** C++ Smart Pointers
 #+BEGIN_SRC C
