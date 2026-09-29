@@ -1,3 +1,84 @@
+* Defer in C for free only cause no params
+#+begin_src C
+-defer.h
+#pragma once
+
+typedef struct fn_type {
+  void (*fn)(void*); // function pointer to defer
+  void* ptr;         // value 
+} fn_type;
+
+typedef struct stack_frame {  // stack frame something to contain defer funcs
+  fn_type defers[100];        // up to 100 defers
+  unsigned int size;          // index or size
+} stack_frame;
+
+extern stack_frame call_stack[100];      // will be used in defer.c
+extern unsigned int call_stack_pointer;  // index will be used in defer.c
+
+#define defer(fn_value, ptr_value) \
+  call_stack[call_stack_pointer].defers[call_stack[call_stack_pointer].size++] = (fn_type){.fn = fn_value, .ptr = ptr_value};
+
+#define init_stack \
+  call_stack[call_stack_pointer++] = (stack_frame){.defers = {}, .size = 0};
+
+#define call_with_dest(fn_value, dest) \
+  init_stack \
+  *dest = fn_value; \
+  for (int index = 0; index < call_stack[call_stack_pointer].size; ++index) { \
+    call_stack[call_stack_pointer].defers[index].fn(call_stack[call_stack_pointer].defers[index].ptr);
+  } \
+  call_stack_pointer--;
+
+ #define call_without_dest(fn_value) \
+  init_stack \
+  fn_value; \
+  for (int index = 0; index < call_stack[call_stack_pointer].size; ++index) { \
+    call_stack[call_stack_pointer].defers[index].fn(call_stack[call_stack_pointer].defers[index].ptr); } \
+  call_stack_pointer--;
+
+#define call1(fn, dest) call_with_dest(fn, dest)
+#define call2(fn) call_without_dest(fn)
+
+#define call_select(_1, _2, NAME, ...) NAME
+#define $(...) call_select(__VA_ARGS__, call2, call1)(__VA_ARGS__)
+int __main__(int argc, char** argv);
+
+#define main(...) \
+  main(int argc, char** argv) { \ 
+    int return_value = 0; \
+    $(__main__(argc, argv), &return_value); \
+    return return_value; \
+} \
+int __main__(__VA_ARGS__)
+
+-defer.c
+#include "defer.h"
+
+stack_frame call_stack[100] = { 0 };
+unsigned int call_stack_pointer = 0;
+
+-Makefile
+main: main.c
+  gcc -o main main.c defer.c
+
+-main.c
+#include "defer.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char** argv) {
+  int* foo = malloc(sizeof(int));
+  defer(free, foo);
+  *foo = 100;
+  printf("%d\n", *foo);
+  return 0;
+}
+
+check that pointer was freed with valgrind
+valgrind ./main
+
+#+end_src
 * Dynamic Array in C
 #+begin_src C
 #include <stdio.h>
