@@ -1,3 +1,33 @@
+* Structs
+: this will allow the short tag within the struct and will allow declaration Vertex v1;
+typedef struct Vertex Vertex;
+struct Vertex {
+  int sickness;
+  Vertex *inga;  // struct cannot contain itself by value only pointer
+};
+
+: this will allow the tag within the struct and will allow declaration Vertex v1;
+typedef struct Vertex {
+  int sickness;
+  struct Vertex *inga;
+} Vertex;
+
+: this will allow tag within struct but can use declaration struct Vertex v1;
+struct Vertex {
+  int sickness;
+  struct Vertex *inga;
+};
+
+: anonymous struct, can do Vertex v1 but no tag so cannot do struct Vertex *vertex within the struct
+typedef struct {
+  int sick;
+} Vertex;
+
+: anonymous struct, can do Vertex.sick = 5, but cannot do Vertex v2 cause Vertex is a variable not a type;
+struct {
+  int sickness;
+} Vertex;
+
 * Defer in C for free only cause no params
 #+begin_src C
 -defer.h
