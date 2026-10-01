@@ -184,7 +184,10 @@ Most of it sucks due to no bounds checking but these are worth using
 
 - Math functions.
 * Keywords
+** restrict
+(C99) is a pointer qualifier that makes a promise to the compiler: for the lifetime of that pointer, the object it points to is accessed only through that pointer (or pointers derived from it). No other pointer will alias that memory.
 
+That promise lets the compiler optimize more aggressively, since it doesn't have to assume a write through one pointer might change what another pointer sees.
 ** NODISCARD
 C23 feature
 [[nodiscard\]] in double braces in function declaration compiler will check that the return value is being assigned
