@@ -1,0 +1,21 @@
+* Mipmapping Filter Types
+1. GL_NEAREST_MIPMAP_NEAREST - selects the nearest mipmap and performs NEAREST filtering inside the mipmap(fastest) but poor quality
+2. GL_LINEAR_MIPMAP_NEAREST
+3. GL_NEAREST_MIPMAP_LINEAR
+4. GL_LINEAR_MIPMAP_LINEAR - also known as trilinear filtering(slowest) but highest quality
+
+* Lighting
+** Diffuse Lighting - single source of lighting like a sun all light rays are parallel(directional light)
+Triangle / face normal is constant across the face of a triangle
+Vertex normal is the average of all the triangle normals that share that vertex
+
+If using triangle normals for the lighting you get abrupt changes of the lighting(cool effect)
+
+If using vertex normals for the lighting the changes are gradual and look a lot more natural
+
+* GLint vs GLuint
+1. Look at the function prototype and match its parameter/return type.
+2. Object names and indices → GLuint.
+3. Locations, status/query results, anything that can be -1 → GLint.
+4. Don't "optimize" by switching types; the GL types exist so your code is portable across platforms where int width may differ, and matching the signature avoids sign-conversion warnings.
+

@@ -1,3 +1,10 @@
+* Advanced Arrays
+int *a[10];
+int (*b)[10];
+// a: an array of 10 pointers to int
+// b: a pointer to an array of 10 ints
+// parenthesis makes the whole difference
+
 * Structs
 : this will allow the short tag within the struct and will allow declaration Vertex v1;
 typedef struct Vertex Vertex;
@@ -188,6 +195,46 @@ Most of it sucks due to no bounds checking but these are worth using
 (C99) is a pointer qualifier that makes a promise to the compiler: for the lifetime of that pointer, the object it points to is accessed only through that pointer (or pointers derived from it). No other pointer will alias that memory.
 
 That promise lets the compiler optimize more aggressively, since it doesn't have to assume a write through one pointer might change what another pointer sees.
+
+#+begin_src C
+void add(int *a, int *b, int *c, int n) {
+    for (int i = 0; i < n; i++)
+        a[i] = b[i] + c[i];
+}
+#+end_src
+
+Without restrict, the compiler must assume a might overlap b or c. Writing a[i] could change a later b[i+1], so it can't safely vectorize or reorder loads and stores.
+
+#+begin_src C
+void add(int *restrict a, const int *restrict b, const int *restrict c, int n) {
+    for (int i = 0; i < n; i++)
+        a[i] = b[i] + c[i];
+}
+#+end_src
+
+Now the compiler knows the three arrays don't overlap, so it can keep values in registers, unroll, and use SIMD.
+
+The catch: you're making a promise, not the compiler
+
+If you violate it, the behavior is undefined:
+
+#+begin_src C
+int buf[10];
+add(buf, buf, buf + 1, 9);   // UB: a and b/c overlap
+#+end_src
+
+The compiler won't warn you, and the code may silently produce wrong results at -O2.
+
+Real-world examples
+memcpy uses restrict on both pointers (source and destination must not overlap), while memmove does not, which is exactly why memmove handles overlap and memcpy doesn't.
+strcpy, sprintf, and fread and friends also use it in their prototypes.
+Notes
+It only matters when the restricted object is modified. If everything is only read, aliasing is harmless anyway.
+Using const alongside it on read-only inputs documents intent well.
+It's a hint with no effect on correctness when used properly, so adding it never changes behavior in a valid program.
+C++ has no standard restrict, but most compilers offer __restrict / __restrict__ as an extension.
+
+Rule of thumb: use it on function parameters in hot loops where you know the buffers are distinct, and nowhere else.
 ** NODISCARD
 C23 feature
 [[nodiscard\]] in double braces in function declaration compiler will check that the return value is being assigned
