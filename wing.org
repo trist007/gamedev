@@ -19,7 +19,9 @@ Wing Gameplay TODOs [5/100] [5%]
 - [ ] add pipelines to renderers to drawCircle
 - [ ] vulkan renderer drawline should have its own buffers not sharing with 3d pipeline
 
+- [ ] will use Catmull Rom spline for player intended flight path then random terrain generation outside(fault formation, midpoint displacement, perlin noise)
 - [ ] implement fortune-cookie for random quote on doom emacs dashboard
+- [ ] like laying a river on a map using procedural code use that for the underground tunnel
 - [ ] for making tunnels under the terrain use a sine function or some wave function to give you that flow
 - [ ] implement a level using triangle normals instead of vertex normals for lighting for a cool paranormal interdimensional effect
 - [ ] switch from radians to turns for a performance gain as per Casey Muratori's paper Turns are Better than Radians

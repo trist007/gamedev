@@ -1,3 +1,36 @@
+* Darwin
+Doom on macOS has a few rough edges, and you’ve hit the main ones. Here’s what’s behind each.
+
+Keyboard dead in fullscreen
+
+This is a known problem with macOS native fullscreen, which moves the frame into its own Space. It’s especially flaky with daemon/emacsclient frames and some Homebrew builds. The usual fix is to turn native fullscreen off and let Emacs do its own fullscreen. Put this in ~/.doom.d/config.el (or ~/.config/doom/config.el):
+
+elisp
+(setq ns-use-native-fullscreen nil)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+Then run doom sync and restart Emacs. Toggle with M-x toggle-frame-fullscreen, or M-x toggle-frame-maximized if you only want it to fill the screen. If the keyboard still dies, try a different build (emacs-plus or emacs-mac via Homebrew) and check whether it happens in a non-daemon frame too.
+
+Modifier keys
+
+Macs don’t map Meta the way Emacs expects. If M-x or M-m feels off, set this explicitly:
+
+elisp
+(setq mac-command-modifier 'meta
+      mac-option-modifier  'super)
+
+Swap them if you’d rather have Option as Meta. Doom’s :os macos handling sets some defaults, but being explicit avoids surprises.
+
+Confusing keybinds
+
+Most of the confusion comes from Doom shipping with evil (Vim keys) by default. SPC as a leader only works in evil normal mode. If you don’t want Vim bindings, comment out evil under :editor in init.el and run doom sync. The leader then becomes M-SPC (or C-c for many commands), and plain Emacs keys behave normally.
+
+To find out what anything does:
+
+C-h k (or SPC h k in evil) shows what a key does
+C-h f and C-h v look up a function or variable
+SPC h b b lists every binding in the current mode
+Pause after SPC or C-c and which-key shows the available next keys
 * List colors
 M-x list-colors-display
 * Check the face of the character
