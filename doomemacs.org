@@ -106,3 +106,5 @@ BreakBeforeBraces: Allman
 ** In dired to unmark all files M-del
 [2026-09-11 Fri 15:41]
 [[file:c:/dev/3drenderer/clean.bat]]
+C-x C-q enters dired into write mode
+In dired to sort by date enter o
