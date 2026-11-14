@@ -19,7 +19,13 @@ Wing Gameplay TODOs [5/100] [5%]
 - [ ] add pipelines to renderers to drawCircle
 - [ ] vulkan renderer drawline should have its own buffers not sharing with 3d pipeline
 
+- [ ] learn HLSL to make shaders for d3d11
+- [ ] implement doxygen for every function, if you don't understand function rework it until you do, then write the doxygen documentation to seal it
+- [ ] understand and streamline d3d_engine.c
 - [ ] will use Catmull Rom spline for player intended flight path then random terrain generation outside(fault formation, midpoint displacement, perlin noise)
+- [ ] update errors to show __LINE__ and __FILE__ for better errors
+- [ ] prop placement replace json with MeshTableEntry struct for file path of meshes(props) and PropPlacement struct with mesh_id and a transform that contains world coords so at compile time they are checked instead of a json file being parsed at runtime ie in initGame
+- [ ] document the graphics APIs with the common pipelines
 - [ ] implement fortune-cookie for random quote on doom emacs dashboard
 - [ ] like laying a river on a map using procedural code use that for the underground tunnel
 - [ ] for making tunnels under the terrain use a sine function or some wave function to give you that flow

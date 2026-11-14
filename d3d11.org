@@ -11,3 +11,5 @@ change createSwapChainDesc from DXGI_SWAP_EFFECT_FLIP_DISCARD to
 DXGI_SWAP_EFFECT_DISCARD
 [2026-07-22 Wed 21:35]
 [[file:c:/dev/org/gamedev/d3d11.org]]
+
+structs in Shader need to have their sizes be a multiple of 16
